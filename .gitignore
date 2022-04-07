@@ -1,0 +1,11 @@
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.idea
+.git
+data
+evolvefg/nef/migrations/*
+evolvefg/netapp_endpoint/migrations/*
+evolvefg/db_template.properties
+evolvefg/scenario.json

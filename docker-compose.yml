@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  dbnetapp:
+    image: postgres:10
+    container_name: nefpostgres
+    volumes:
+      - ./data/postgres-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=evolvedb
+      - POSTGRES_USER=evolveclient
+      - POSTGRES_PASSWORD=evolvepass
+  nefdjango:
+    image: nefdjango
+    container_name: nefdjango
+    build:
+      context: ./evolvefg
+    command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh"]
+    ports:
+      - 8000:8000
+    volumes:
+      - ./evolvefg:/code
+    depends_on:
+      - dbnetapp
