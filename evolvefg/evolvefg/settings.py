@@ -26,6 +26,7 @@ SECRET_KEY = 'gkjg31k-__39us419e_89i#crk^832s5x=(2%z=o6!n^8d#qcl'
 DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -37,12 +38,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'netapp_endpoint',
     'rest_framework',
     'django_extensions',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

@@ -22,3 +22,15 @@ services:
       - ./evolvefg:/code
     depends_on:
       - dbnetapp
+  netappfe:
+    image: netappfe
+    container_name: netappfe
+    build:
+      context: ./netappfe
+    ports:
+      - 4200:4200
+    volumes:
+      - ./netappfe:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - nefdjango

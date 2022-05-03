@@ -1,5 +1,4 @@
 #!/bin/bash
 docker-compose up --detach --remove-orphans --build
-
-cd pygui
-docker build -t pygui .
+sleep 5
+curl -s -o /dev/null --request GET http://localhost:8000/netappserver/api/v1/cells/update/
