@@ -45,17 +45,24 @@ cd FOGUS-Evolved-NetApp
 
 # Stop and remove containers
 ./cleanup_docker_containers.sh
-
-# Build and run only gui container
-./run_only_gui.sh
 ```
 
-# Trigger NetApp
-## Use Python GUI
-```bash
+## Architecture
 
-./start_gui.sh
+| Container             | Folder                | Description                                      |
+|-----------------------|-----------------------|--------------------------------------------------|
+| nefdjango             | evolvedfg             | Backend of NetApp                                |
+| netappfe              | netappfe              | Frontend of NetApp                               |
+| nefpostgres           | -                     | DB to store info exchanged with NEF              |
+
+
+## Access NetApp
+### In your browser, access the following url
 ```
+http://localhost:4200/
+```
+
+
 ## Use curl
 ### Populate cells from NEF Emulator
 ```
