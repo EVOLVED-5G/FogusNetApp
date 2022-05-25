@@ -4,7 +4,7 @@ __pycache__/
 *$py.class
 .idea
 .git
-data
-evolvefg/nef/migrations/*
-evolvefg/netapp_endpoint/migrations/*
-evolvefg/db_template.properties
+src/data
+src/evolvefg/nef/migrations/*
+src/evolvefg/netapp_endpoint/migrations/*
+src/evolvefg/db_template.properties
