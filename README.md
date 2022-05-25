@@ -12,7 +12,7 @@ sudo apt install -y jq
 ```
 
 ## Create properties file
-Create a file named **_db_template.properties_** inside "evolvedfg" folder, with format:
+Create a file named **_db_template.properties_** inside "src/evolvedfg" folder, with format:
 ```properties
 # Database Configuration
 [nef]
@@ -32,7 +32,7 @@ cb_port=<Callback server port>
 
 ## Deploy the NetApp
 ```bash
-cd FOGUS-Evolved-NetApp
+cd FogusNetApp/src
 
 # Build and deploy containers
 ./run.sh
