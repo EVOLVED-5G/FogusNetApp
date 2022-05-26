@@ -3,34 +3,34 @@ version: '3'
 services:
   dbnetapp:
     image: postgres:10
-    container_name: nefpostgres
+    container_name: netapppostgres
     volumes:
-      - ./data/postgres-data:/var/lib/postgresql/data
+      - ./src/data/postgres-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=evolvedb
       - POSTGRES_USER=evolveclient
       - POSTGRES_PASSWORD=evolvepass
-  nefdjango:
-    image: nefdjango
-    container_name: nefdjango
+  netappdjango:
+    image: netappdjango
+    container_name: netappdjango
     build:
-      context: ./evolvefg
+      context: ./src/evolvefg
     command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh"]
     ports:
       - 8000:8000
     volumes:
-      - ./evolvefg:/code
+      - ./src/evolvefg:/code
     depends_on:
       - dbnetapp
   netappfe:
     image: netappfe
     container_name: netappfe
     build:
-      context: ./netappfe
+      context: ./src/netappfe
     ports:
       - 4200:4200
     volumes:
-      - ./netappfe:/usr/src/app
+      - ./src/netappfe:/usr/src/app
       - /usr/src/app/node_modules
     depends_on:
-      - nefdjango
+      - netappdjango
