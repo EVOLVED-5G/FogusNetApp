@@ -60,7 +60,7 @@ class MonitoringCallback (models.Model):
         blank=True
     )
     monitoringType = models.CharField(max_length=25, choices=MONITORING_TYPE)
-    subscription = models.CharField(max_length=100)
+    subscription = models.CharField(max_length=200)
     ipv4Addr = models.CharField(max_length=15, null=True, blank=True)
 
 
