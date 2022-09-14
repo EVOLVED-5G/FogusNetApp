@@ -94,7 +94,8 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
                 'Content-Type': 'application/json'
             }
 
-            requests.request('POST', vapp_host, headers=headers, data=payload)
+            # Uncomment when testing with VApp
+            # requests.request('POST', vapp_host, headers=headers, data=payload)
 
         return super().create(request, *args, **kwargs)
 
@@ -200,9 +201,13 @@ class CreateMonitoringSubscriptionView(APIView):
                 'Content-Type': 'application/json'
             }
 
-            response = requests.request('POST', vapp_host, headers=headers, data=payload)
-            message = json.loads(response.text)
-            status_code = response.status_code
+            # Uncomment when testing with VApp
+            # response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            # message = json.loads(response.text)
+            # status_code = response.status_code
+            message = monitoring_response
+            status_code = status.HTTP_201_CREATED
+
         else:
             message = subscription.to_dict()
             status_code = status.HTTP_201_CREATED
