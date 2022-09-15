@@ -8,7 +8,7 @@ export class MonitoringSubscriptionService {
 
   constructor(private http: HttpClient) { }
 
-  create_monitoring_subscription(data: string) { 
-    return this.http.get('http://localhost:8000/netappserver/api/v1/monitoring/subscribe/' + data + '/');
+  create_monitoring_subscription(data: string) {
+    return this.http.get('http://netappdjango:8000/netappserver/api/v1/monitoring/subscribe/' + data + '/');
   }
 }
