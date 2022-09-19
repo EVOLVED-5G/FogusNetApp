@@ -6,10 +6,8 @@ services:
     container_name: netapppostgres
     volumes:
       - ./src/data/postgres-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=evolvedb
-      - POSTGRES_USER=evolveclient
-      - POSTGRES_PASSWORD=evolvepass
+    env_file:
+      - .env
   netappdjango:
     image: netappdjango
     container_name: netappdjango
@@ -20,6 +18,8 @@ services:
       - 8000:8000
     volumes:
       - ./src/evolvefg:/code
+    env_file:
+      - .env
     depends_on:
       - dbnetapp
   netappfe:
@@ -32,5 +32,7 @@ services:
     volumes:
       - ./src/netappfe:/usr/src/app
       - /usr/src/app/node_modules
+    env_file:
+      - .env
     depends_on:
       - netappdjango

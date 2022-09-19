@@ -16,6 +16,7 @@ from evolved5g.sdk import LocationSubscriber
 from evolved5g import swagger_client
 from evolved5g.swagger_client import LoginApi
 from evolved5g.swagger_client.models import Token
+import os
 
 
 config = configparser.ConfigParser()
@@ -29,28 +30,33 @@ def get_token() -> Token:
     api_client = swagger_client.ApiClient(configuration=configuration)
     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
     api = LoginApi(api_client)
-    nef_user = config.get("nef", "nef_user")
-    nef_pass = config.get("nef", "nef_pass")
+    nef_user = os.environ['NEF_USER']
+    nef_pass = os.environ['NEF_PASSWORD']
     token = api.login_access_token_api_v1_login_access_token_post("", nef_user, nef_pass, "", "", "")
     return token
 
 
 def get_host_of_the_nef_emulator() -> str:
-    emulator = config.get("nef", "emulator")
-    em_port = config.get("nef", "em_port")
-    return "http://{}:{}".format(emulator, em_port)
+    # emulator = config.get("nef", "emulator")
+    # em_port = config.get("nef", "em_port")
+    nef_address = os.environ['NEF_ADDRESS']
+    return "http://{}".format(nef_address)
 
 
 def get_host_of_the_callback_server() -> str:
-    cb_server = config.get("callback", "cb_server")
-    cb_port = config.get("callback", "cb_port")
-    return "http://{}:{}".format(cb_server, cb_port)
+    # cb_server = config.get("callback", "cb_server")
+    # cb_port = config.get("callback", "cb_port")
+    # return "http://{}:{}".format(cb_server, cb_port)
+    callback_address = os.environ['CALLBACK_ADDRESS']
+    return "http://{}".format(callback_address)
 
 
 def get_vapp_server() -> str:
-    vapp_server = config.get("vapp", "vapp_server")
-    vapp_port = config.get("vapp", "vapp_port")
-    return "http://{}:{}/ossimserver/asset/".format(vapp_server, vapp_port)
+    # vapp_server = config.get("vapp", "vapp_server")
+    # vapp_port = config.get("vapp", "vapp_port")
+    # return "http://{}:{}/ossimserver/asset/".format(vapp_server, vapp_port)
+    vapp_address = os.environ['VAPP_ADDRESS']
+    return "http://{}/ossimserver/asset/".format(vapp_address)
 
 
 class MonitoringCallbackViewSet(mixins.ListModelMixin,
