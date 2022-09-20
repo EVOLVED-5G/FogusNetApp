@@ -9,3 +9,4 @@ src/evolvefg/nef/migrations/*
 src/evolvefg/netapp_endpoint/migrations/*
 #src/evolvefg/db_template.properties
 src/netappfe/.angular/*
+.env

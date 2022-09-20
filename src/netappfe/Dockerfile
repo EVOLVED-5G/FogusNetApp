@@ -21,5 +21,5 @@ RUN npm install -g @angular/cli@13.3.4
 COPY . /usr/src/app
 
 # start app
-CMD ["/bin/sh",  "-c",  "envsubst < src/assets/env.template.js > src/assets/env.js && exec ng serve --host 0.0.0.0 --disable-host-check;"]
-# CMD ng serve --host 0.0.0.0 --disable-host-check
+# CMD ["/bin/sh",  "-c",  "envsubst < src/assets/env.template.js > src/assets/env.js && exec ng serve --host 0.0.0.0 --disable-host-check;"]
+CMD ng serve --host 0.0.0.0 --disable-host-check

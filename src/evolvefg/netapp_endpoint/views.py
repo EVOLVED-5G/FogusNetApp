@@ -22,6 +22,7 @@ import os
 config = configparser.ConfigParser()
 config.read('db_template.properties')  # it has to be changed with "db_template.properties" when filled
 
+CALLBACK_SRV = 'http://0.0.0.0:8000'
 
 def get_token() -> Token:
     configuration = swagger_client.Configuration()
@@ -47,8 +48,9 @@ def get_host_of_the_callback_server() -> str:
     # cb_server = config.get("callback", "cb_server")
     # cb_port = config.get("callback", "cb_port")
     # return "http://{}:{}".format(cb_server, cb_port)
-    callback_address = os.environ['CALLBACK_ADDRESS']
-    return "http://{}".format(callback_address)
+    # callback_address = os.environ['CALLBACK_ADDRESS']
+    # return "http://{}".format(callback_address)
+    return CALLBACK_SRV
 
 
 def get_vapp_server() -> str:
@@ -176,6 +178,7 @@ class CreateMonitoringSubscriptionView(APIView):
         location_subscriber = LocationSubscriber(host, token.access_token)
         external_id = "10001@domain.com"
         callback_host = get_host_of_the_callback_server()
+        print(callback_host)
 
         subscription = location_subscriber.create_subscription(
             netapp_id=netapp_id,
