@@ -2,5 +2,5 @@
   window["env"] = window["env"] || {};
   // Environment variables
   //@ts-ignore
-  window["env"]["backend"] = "192.168.1.15:8000";
+  window["env"]["backend"] = "192.168.1.7:8000";
 })(this);

@@ -7,6 +7,6 @@ __pycache__/
 src/data
 src/evolvefg/nef/migrations/*
 src/evolvefg/netapp_endpoint/migrations/*
-#src/evolvefg/db_template.properties
 src/netappfe/.angular/*
+src/netappfe/src/assets/env.js
 .env
