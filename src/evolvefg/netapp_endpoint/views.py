@@ -1,7 +1,12 @@
+from asyncio import exceptions
+from contextlib import _RedirectStream
+from urllib import response
+from authentication import JWTAuthentication, generate_access_token
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets, mixins
+from serializers import UserSerializer
 from .serializers import *
 from .models import *
 import mariadb
@@ -17,6 +22,12 @@ from evolved5g import swagger_client
 from evolved5g.swagger_client import LoginApi
 from evolved5g.swagger_client.models import Token
 import os
+from django.contrib.auth import authenticate, login
+from django.shortcuts import redirect
+from rest_framework.decorators import api_view
+from rest_framwork.permissions import isAuthenticated
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 config = configparser.ConfigParser()
@@ -241,3 +252,60 @@ class CellsUpdateView(APIView):
             Cell.objects.update_or_create(cellId=cell['cell_id'],latitude=cell['latitude'], longitude=cell['longitude'],)
 
         return Response(parsed, status=status.HTTP_201_CREATED)
+
+class UserViewset(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    permission_classes = [isAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    serializer_class = [UserSerializer]
+    @api_view(['GET'])
+    def users(request):
+        serializer = UserSerializer(User.objects.all(), many=True)
+        return Response(serializer.data)
+
+    @api_view(['POST'])
+    def register(request):
+        data = request.data
+        if data['password'] != data['password_confirm'] :
+            raise exceptions.APIExceptions('Passwords do not match')
+        serializer = UserSerializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(selializer.data)
+
+    def my_view(request):
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('login')
+        else:
+            pass # Return an 'invalid login' error message
+    
+    @api_view(['POST'])
+    def login(request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        user = User.objects.filter(email=email).first()
+        if user is None : 
+            raise exceptions.AuthenticationFailed('User not found')
+        if not user.check_password(password): 
+            raise exceptions.AuthenticationFailed('Incorrect password')
+        respone = Response()
+        token = generate_access_token(user)
+        response.set_cookie(key='jwt', value='token', httponly=True)
+        response.data={
+            'jwt': token
+        }
+        return response
+
+class AuthenticatedUser(APIView):
+    #authentication_classes = [JWTAuthentication]
+    #permission_classes = [isAuthenticated]
+    def get(self,request):
+        serializer = UserSerializer(request.user)
+        
+        return Response({
+            'data': serializer.data
+        })

@@ -1,4 +1,6 @@
 from django.contrib import admin
+
+from views import User
 from .models import *
 
 
@@ -15,3 +17,7 @@ class AnalyticsEventNotificationAdmin (admin.ModelAdmin):
 @admin.register(Cell)
 class CellAdmin (admin.ModelAdmin):
     list_display = ['id', 'cellId', 'latitude', 'longitude']
+
+@admin.register(User)
+class UserAdmin (admin.ModelAdmin):
+    list_display = ['id', 'username', 'email']

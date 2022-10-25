@@ -6,27 +6,29 @@
         <h1 class="h3 mb-3 fw-normal">Please register</h1>
     
         <div class="form-floating">
-          <input type="text" class="form-control" id="firstName" placeholder="First Name">
+          <input type="text" class="form-control" id="firstName" placeholder="First Name" required=""
+          oninvalid="this.setCustomValidity('Enter User Name Here')"
+          oninput="this.setCustomValidity('')"/>
           <label for="firstName">First Name</label>
         </div>
         
         <div class="form-floating">
-            <input type="text" class="form-control" id="lastName" placeholder="Last Name">
+            <input type="text" class="form-control" id="lastName" placeholder="Last Name" required>
             <label for="lastName">Last Name</label>
         </div>
 
         <div class="form-floating">
-            <input type="email" class="form-control" id="inputEmail" placeholder="Email address">
+            <input type="email" class="form-control" id="inputEmail" placeholder="Email address" required>
             <label for="inputEmail">Email address</label>
         </div>
 
         <div class="form-floating">
-            <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+            <input type="password" class="form-control" id="inputPassword" placeholder="Password" required>
             <label for="inputPassword">Password</label>
         </div>
 
         <div class="form-floating">
-            <input type="password" class="form-control" id="PassswordConfirm" placeholder="Passsword Confirm">
+            <input type="password" class="form-control" id="PassswordConfirm" placeholder="Passsword Confirm" required>
             <label for="PassswordConfirm">Passsword Confirm</label>
         </div>
 

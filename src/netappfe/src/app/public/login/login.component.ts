@@ -36,6 +36,7 @@ export class LoginComponent implements OnInit {
     }
     else{
       console.log('failure')
+      window.alert('Login failed, please try again');
     }
 
     // this.authService.login(data).subscribe(

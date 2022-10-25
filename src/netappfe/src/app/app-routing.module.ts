@@ -22,7 +22,9 @@ const routes: Routes = [
     children: [
       {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
       {path: 'dashboard', component: DashbardComponent},
-      {path: 'monitorsubscribe', component: MonitorSubscriptionComponent}
+      {path: 'monitorsubscribe', component: MonitorSubscriptionComponent},
+      {path: 'login', component: LoginComponent},
+      {path: 'register', component: RegisterComponent}
     ]
   }
 ];

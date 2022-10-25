@@ -1,3 +1,4 @@
+from models import User
 from rest_framework import serializers
 from .models import *
 
@@ -18,4 +19,9 @@ class CellSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Cell
         fields = ['id', 'cellId', 'latitude', 'longitude']
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'userId', 'username', 'email', 'password']
 
