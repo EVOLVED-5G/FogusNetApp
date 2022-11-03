@@ -8,23 +8,21 @@ import { MonitorSubscriptionComponent } from './secure/monitor-subscription/moni
 import { SecureComponent } from './secure/secure.component';
 
 const routes: Routes = [
-  // {
-  //   path: '',
-  //   component: PublicComponent,
-  //   children: [
-  //     {path: 'login', component: LoginComponent},
-  //     {path: 'register', component: RegisterComponent},
-  //   ]
-  // },
   {
     path: '', 
     component: SecureComponent,
     children: [
-      {path: '', redirectTo: '/dashboard', pathMatch: 'full'},
+      {path: '', redirectTo: '/login', pathMatch: 'full'},
       {path: 'dashboard', component: DashbardComponent},
       {path: 'monitorsubscribe', component: MonitorSubscriptionComponent},
+    ]
+  },
+  {
+    path: '',
+    component: PublicComponent,
+    children: [
       {path: 'login', component: LoginComponent},
-      {path: 'register', component: RegisterComponent}
+      {path: 'register', component: RegisterComponent},
     ]
   }
 ];
