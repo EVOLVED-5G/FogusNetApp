@@ -7,28 +7,28 @@
     
         <div class="form-floating">
           <input type="text" class="form-control" formControlName="first_name"  id="firstName" placeholder="First Name" required autofocus>
-          <label for="firstName" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">First Name</label>
+          <label for="firstName">First Name</label>
           <div *ngIf="form.controls['first_name'].errors && (form.controls['first_name'].dirty || form.controls['first_name'].touched)">
             <p *ngIf="form.controls['first_name'].errors?.['required']" style="color:red">First name is required</p> </div>
         </div>
 
         <div class="form-floating">
           <input type="text" class="form-control" formControlName="last_name" id="lastName" placeholder="Last Name" required autofocus>
-          <label for="lastName" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">Last Name</label>
+          <label for="lastName">Last Name</label>
           <div *ngIf="form.controls['last_name'].errors && (form.controls['last_name'].dirty || form.controls['last_name'].touched)">
             <p *ngIf="form.controls['last_name'].errors?.['required']" style="color:red">Last name is required</p> </div>
         </div>
         
         <div class="form-floating">
           <input type="text" class="form-control" formControlName="username"  id="userName" placeholder="Userame" required autofocus>
-          <label for="userName" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">Username</label>
+          <label for="userName">Username</label>
           <div *ngIf="form.controls['username'].errors && (form.controls['username'].dirty || form.controls['username'].touched)">
             <p *ngIf="form.controls['username'].errors?.['required']" style="color:red">Username is required</p> </div>
         </div>
 
         <div class="form-floating">
           <input type="email" class="form-control" formControlName="email" id="inputEmail" placeholder="Email address" required autofocus>
-          <label for="inputEmail" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">Email address</label>
+          <label for="inputEmail">Email address</label>
           <div *ngIf="form.controls['email'].errors && (form.controls['email'].dirty || form.controls['email'].touched)">
             <p *ngIf="form.controls['email'].errors?.['required']" style="color:red">Email is required</p> 
             <p *ngIf="form.controls['email'].errors?.['pattern']" style="color:red">Please provide a valid email address </p> </div>
@@ -36,20 +36,20 @@
 
         <div class="form-floating">
           <input type="password" class="form-control" formControlName="password" id="inputPassword" placeholder="Password" required>
-          <label for="inputPassword" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">Password</label>
+          <label for="inputPassword">Password</label>
           <div *ngIf="form.controls['password'].errors && (form.controls['password'].dirty || form.controls['password'].touched)">
             <p *ngIf="form.controls['password'].errors?.['required']" style="color:red">Password is required</p> </div>
           </div>
 
         <div class="form-floating">
           <input type="password" class="form-control" formControlName="password_confirm" id="PassswordConfirm" placeholder="Passsword Confirm" required>
-          <label for="PassswordConfirm" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">Passsword Confirm</label>
+          <label for="PassswordConfirm">Passsword Confirm</label>
           <div *ngIf="form.controls['password_confirm'].errors && (form.controls['password_confirm'].dirty || form.controls['password_confirm'].touched)">
             <p *ngIf="form.controls['password_confirm'].errors?.['required']" style="color:red">Password confirm is required</p> </div>
             <div *ngIf="form.controls['password_confirm'].errors?.['matching']" style="color:red"> Confirm Password does not match </div>
         </div>
 
-        <button class="w-100 btn btn-lg btn-primary" [disabled]="form.invalid" type="submit" style="font-family:system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue';">Sign up</button>
+        <button class="w-100 btn btn-lg btn-primary" [disabled]="form.invalid" type="submit">Sign up</button>
         <div class="alert alert-danger" *ngIf="isSignUpFailed"> Sign up failed!<br />{{ errorMessage }}
         </div>
       </form>

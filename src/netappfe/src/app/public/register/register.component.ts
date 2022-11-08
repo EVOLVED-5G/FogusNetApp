@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {AbstractControl,FormBuilder, FormGroup, Validators, FormControl} from "@angular/forms";
 import { AuthService } from 'src/app/services/auth.service';
-import { NgModule } from '@angular/core';
 import Validation from 'src/app/public/utils/validation_form';
 
 @Component({
@@ -23,6 +22,7 @@ export class RegisterComponent implements OnInit {
   isSuccessful: boolean = false;
   isSignUpFailed: boolean= false;
   errorMessage = '';
+  dataJson: any;
 
   constructor(private formBulder: FormBuilder, private authService: AuthService) { }
 
@@ -37,7 +37,7 @@ export class RegisterComponent implements OnInit {
         password_confirm: ['',Validators.required]
       },
       {
-        validators: [Validation.match('password', 'confirmPassword')]
+        validators: [Validation.match('password', 'password_confirm')]
       });
   }
 
@@ -45,16 +45,16 @@ export class RegisterComponent implements OnInit {
     const data = this.form.getRawValue();
     this.submitted = true;
     console.log(data);
-    this.authService.register(data).subscribe( 
-      res=>{
-      // console.log(res);
-      // this.isSuccessful = true;
-      console.log(this.isSuccessful)
-      // this.isSignUpFailed = false;
+    this.dataJson = JSON.stringify(data);
+    this.authService.register(data).subscribe({
+      next: (res: any) =>{
+      this.isSuccessful = true;
+      this.isSignUpFailed = false;
       },
-      err => {
+      error: (err: { error: { message: string; }; }) => {
         this.errorMessage = err.error.message;
-        // this.isSignUpFailed = true;
+        this.isSignUpFailed = true;
+      }
       });
   }
 

@@ -1,12 +1,11 @@
-from asyncio import exceptions
-from contextlib import _RedirectStream
-from urllib import response
-from authentication import JWTAuthentication, generate_access_token
-from rest_framework import status
+from rest_framework import status, views, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets, mixins
-from serializers import UserSerializer
+from rest_framework.permissions import AllowAny
+from django.contrib.auth.models import User
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import generics
 from .serializers import *
 from .models import *
 import mariadb
@@ -22,12 +21,6 @@ from evolved5g import swagger_client
 from evolved5g.swagger_client import LoginApi
 from evolved5g.swagger_client.models import Token
 import os
-from django.contrib.auth import authenticate, login
-from django.shortcuts import redirect
-from rest_framework.decorators import api_view
-from rest_framwork.permissions import isAuthenticated
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 config = configparser.ConfigParser()
@@ -112,7 +105,7 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
             }
 
             # Uncomment when testing with VApp
-            # requests.request('POST', vapp_host, headers=headers, data=payload)
+            requests.request('POST', vapp_host, headers=headers, data=payload)
 
         return super().create(request, *args, **kwargs)
 
@@ -219,11 +212,11 @@ class CreateMonitoringSubscriptionView(APIView):
             }
 
             # Uncomment when testing with VApp
-            # response = requests.request('POST', vapp_host, headers=headers, data=payload)
-            # message = json.loads(response.text)
-            # status_code = response.status_code
-            message = monitoring_response
-            status_code = status.HTTP_201_CREATED
+            response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            message = json.loads(response.text)
+            status_code = response.status_code
+            # message = monitoring_response
+            # status_code = status.HTTP_201_CREATED
 
         else:
             message = subscription.to_dict()
@@ -253,59 +246,38 @@ class CellsUpdateView(APIView):
 
         return Response(parsed, status=status.HTTP_201_CREATED)
 
-class UserViewset(viewsets.ModelViewSet):
+class UserDetailAPI(APIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (AllowAny,)
+  def get(self,request,*args,**kwargs):
+    user = User.objects.get(id=request.user.id)
+    serializer = UserSerializer(user)
+    print(Response(serializer.data))
+    return(Response(serializer.data))
+
+# class RegisterUserAPIView(generics.CreateAPIView):
+#   permission_classes = (AllowAny,)
+#   serializer_class = RegisterSerializer
+
+class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
-    permission_classes = [isAuthenticated]
-    authentication_classes = [JWTAuthentication]
-    serializer_class = [UserSerializer]
-    @api_view(['GET'])
-    def users(request):
-        serializer = UserSerializer(User.objects.all(), many=True)
-        return Response(serializer.data)
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
 
-    @api_view(['POST'])
-    def register(request):
-        data = request.data
-        if data['password'] != data['password_confirm'] :
-            raise exceptions.APIExceptions('Passwords do not match')
-        serializer = UserSerializer(data=data)
+class LoginView(APIView):
+    # This view should be accessible also for unauthenticated users.
+    permission_classes = (permissions.AllowAny,)
+
+    def post(self, request, format=None):
+        serializer = LoginSerializer(data=self.request.data,
+            context={ 'request': self.request })
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(selializer.data)
+        user = serializer.validated_data['user']
+        login(request, user)
+        return Response(None, status=status.HTTP_202_ACCEPTED)
 
-    def my_view(request):
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('login')
-        else:
-            pass # Return an 'invalid login' error message
-    
-    @api_view(['POST'])
-    def login(request):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = User.objects.filter(email=email).first()
-        if user is None : 
-            raise exceptions.AuthenticationFailed('User not found')
-        if not user.check_password(password): 
-            raise exceptions.AuthenticationFailed('Incorrect password')
-        respone = Response()
-        token = generate_access_token(user)
-        response.set_cookie(key='jwt', value='token', httponly=True)
-        response.data={
-            'jwt': token
-        }
-        return response
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
 
-class AuthenticatedUser(APIView):
-    #authentication_classes = [JWTAuthentication]
-    #permission_classes = [isAuthenticated]
-    def get(self,request):
-        serializer = UserSerializer(request.user)
-        
-        return Response({
-            'data': serializer.data
-        })
+    def get_object(self):
+        return self.request.user

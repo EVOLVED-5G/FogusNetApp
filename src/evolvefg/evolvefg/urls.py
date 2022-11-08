@@ -1,5 +1,4 @@
 """evolvefg URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
 Examples:
@@ -15,9 +14,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework.authtoken import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('netappserver/', include('netapp_endpoint.urls')),
+    path('',include('netapp_endpoint.urls')),
+    path('api-token-auth', views.obtain_auth_token)
 ]
