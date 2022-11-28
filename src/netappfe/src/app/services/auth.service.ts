@@ -14,13 +14,13 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(data:any) { 
-    return this.http.post('http://localhost:8000/login/', data);
+  login(data:any){ 
+    return this.http.post('http://localhost:8000/api/login/', data) ;
   }
 
   register(data:any) { 
     console.log(data);
-    return this.http.post('http://localhost:8000/register/', data);
+    return this.http.post('http://localhost:8000/api/register/', data);
     // return this.http.post('/register', data);
     // return this.http.post('${environment.backend}/register', data);
   }

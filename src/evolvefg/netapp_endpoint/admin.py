@@ -1,5 +1,10 @@
 from django.contrib import admin
 from .models import *
+from django import forms
+from django.contrib import admin
+from django.contrib.auth.models import Group
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.forms import ReadOnlyPasswordHashField
 
 
 @admin.register(MonitoringCallback)
@@ -15,3 +20,12 @@ class AnalyticsEventNotificationAdmin (admin.ModelAdmin):
 @admin.register(Cell)
 class CellAdmin (admin.ModelAdmin):
     list_display = ['id', 'cellId', 'latitude', 'longitude']
+
+
+
+# admin.site.register(User)
+
+
+# @admin.register(User)
+# class UserAdmin (admin.ModelAdmin):
+#     list_display = ['first_name','last_name', 'username', 'email']

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserCredentials } from 'src/app/auth';
 
 // import { StorageService } from '../_services/storage.service';
 
@@ -16,52 +17,42 @@ export class LoginComponent implements OnInit {
   isLoggedIn: boolean = false;
   isLoginFailed: boolean = false;
   errorMessage = '';
-  dataJson: any;
-  // roles: string[] = [];
+  data: any;
 
   constructor(private formBuilder: FormBuilder,private authService: AuthService,
     private router: Router) { }
-    // private storageService: StorageService
+
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      username: ['',Validators.required],
+      email: ['',Validators.required],
       password: ['',Validators.required]
     });
-    // if (this.storageService.isLoggedIn()) {
-    //   this.isLoggedIn = true;
-    //   // this.roles = this.storageService.getUser().roles;
-    // }
   }
 
-  submit() {
+  submit() : void {
     const data = this.form.getRawValue()
-    // this.dataJson = JSON.stringify(data)
-    this.authService.login(data).subscribe(
-      (res: any)=> {
-        console.log(res);
-        // this.storageService.saveUser(data);
-        this.isLoginFailed = false;
-        this.isLoggedIn = true;
-        // this.roles = this.tokenStorage.getUser().roles;
-        this.reloadPage();
-      },
-      (err: { error: { message: string; }; }) => {
-        this.errorMessage = err.error.message;
-        this.isLoginFailed = true;
-      }
-    )
-    // if (data.username == 'admin' && data.password == 'admin'){
-    //   console.log('success');
-    //   this.isLoginFailed = false;
-    //   this.isLoggedIn = true;
-    //   this.router.navigate(['/dashboard']);
-      
-    // }
-    // else{
-    //   console.log('failure')
-    //   this.isLoginFailed = true;
-    // }
+    if (this.form.invalid) {
+      console.log(this.form.errors);
+    } else {
+        this.authService.login(data).subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (localStorage.getItem('data') !== JSON.stringify(data)) {
+              localStorage.setItem('data', JSON.stringify(data));
+            }
+            this.isLoginFailed = false;
+            this.isLoggedIn = true;
+            this.router.navigate(['/dashboard']);
+          },
+          error: (error: any) => {
+            console.log(error);
+            this.isLoginFailed = true;
+            // this.reloadPage();
+          }
+        }
+      );
+    }
   }
 
   reloadPage(): void {

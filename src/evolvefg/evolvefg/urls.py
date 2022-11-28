@@ -22,5 +22,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('netappserver/', include('netapp_endpoint.urls')),
     path('',include('netapp_endpoint.urls')),
-    path('api-token-auth', views.obtain_auth_token)
+    path('api-token-auth', views.obtain_auth_token),
+    path('api/',include('netapp_endpoint.urls'))
 ]

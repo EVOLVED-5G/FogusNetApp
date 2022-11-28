@@ -12,7 +12,7 @@ const routes: Routes = [
     path: '', 
     component: SecureComponent,
     children: [
-      {path: '', redirectTo: '/login', pathMatch: 'full'},
+      {path: '', redirectTo: '/sign-in', pathMatch: 'full'},
       {path: 'dashboard', component: DashbardComponent},
       {path: 'monitorsubscribe', component: MonitorSubscriptionComponent},
     ]
@@ -21,8 +21,9 @@ const routes: Routes = [
     path: '',
     component: PublicComponent,
     children: [
-      {path: 'login', component: LoginComponent},
-      {path: 'register', component: RegisterComponent},
+      {path: 'sign-in', component: LoginComponent},
+      {path: 'sign-up', component: RegisterComponent},
+      // { path: 'user-profile/:id', component: UserProfileComponent },
     ]
   }
 ];

@@ -45,7 +45,7 @@ export class RegisterComponent implements OnInit {
     const data = this.form.getRawValue();
     this.submitted = true;
     console.log(data);
-    this.dataJson = JSON.stringify(data);
+    // this.dataJson = JSON.stringify(data);
     this.authService.register(data).subscribe({
       next: (res: any) =>{
       this.isSuccessful = true;

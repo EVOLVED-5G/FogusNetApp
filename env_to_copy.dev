@@ -1,11 +1,11 @@
 # copy this file to .env
 # cp env-file-for-local.dev .env
 
-NEF_ADDRESS=192.168.1.21:8888
+NEF_ADDRESS= 192.168.1.4:8888
 NEF_USER=admin@my-email.com
 NEF_PASSWORD=pass
 VAPP_ADDRESS=192.168.1.24
-CALLBACK_ADDRESS=192.168.1.15:8000
+CALLBACK_ADDRESS=localhost:8000
 POSTGRES_DB=evolvedb
 POSTGRES_USER=evolveclient
 POSTGRES_PASSWORD=evolvepass
