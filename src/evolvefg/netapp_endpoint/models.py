@@ -121,7 +121,7 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
   username = models.CharField(db_index=True, max_length=255, unique=True)
   email = models.EmailField(db_index=True, unique=True)
-  password = models.CharField(max_length=50)
+  password = models.CharField(max_length=100)
   first_name = models.CharField(max_length=50)
   last_name = models.CharField(max_length=50)
   # created_at = models.DateTimeField(auto_now_add=True)

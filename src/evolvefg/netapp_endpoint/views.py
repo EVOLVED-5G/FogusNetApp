@@ -31,29 +31,61 @@ from rest_framework.status import (
     HTTP_200_OK
 )
 from .renderers import UserJSONRenderer
+from evolved5g.sdk import LocationSubscriber, QosAwareness, ConnectionMonitor
+from evolved5g.swagger_client import UsageThreshold, Configuration, ApiClient, LoginApi
 
 config = configparser.ConfigParser()
 config.read('db_template.properties')  # it has to be changed with "db_template.properties" when filled
 
 
-def get_token() -> Token:
-    configuration = swagger_client.Configuration()
-    # The host of the 5G API (emulator)
-    configuration.host = get_host_of_the_nef_emulator()
-    api_client = swagger_client.ApiClient(configuration=configuration)
+def request_nef_token(nef_host, username, password):
+    configuration = Configuration()
+    configuration.host = nef_host
+    api_client = ApiClient(configuration=configuration)
     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
     api = LoginApi(api_client)
-    nef_user = os.environ['NEF_USER']
-    nef_pass = os.environ['NEF_PASSWORD']
-    token = api.login_access_token_api_v1_login_access_token_post("", nef_user, nef_pass, "", "", "")
+    token = api.login_access_token_api_v1_login_access_token_post("", username, password, "", "", "")
+
     return token
+
+
+def monitor_subscription(times, host, access_token, certificate_folder, capifhost, capifport, callback_server):
+    expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    netapp_id = "myNetapp"
+    location_subscriber = LocationSubscriber(host, access_token, certificate_folder, capifhost, capifport)
+    external_id = "10001@domain.com"
+
+    subscription = location_subscriber.create_subscription(
+        netapp_id=netapp_id,
+        external_id=external_id,
+        notification_destination=callback_server,
+        maximum_number_of_reports=times,
+        monitor_expire_time=expire_time
+    )
+    monitoring_response = subscription.to_dict()
+
+    return monitoring_response
+
+
+# def get_token() -> Token:
+#     configuration = swagger_client.Configuration()
+#     # The host of the 5G API (emulator)
+#     configuration.host = get_host_of_the_nef_emulator()
+#     api_client = swagger_client.ApiClient(configuration=configuration)
+#     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
+#     api = LoginApi(api_client)
+#     nef_user = os.environ['NEF_USER']
+#     nef_pass = os.environ['NEF_PASSWORD']
+#     token = api.login_access_token_api_v1_login_access_token_post("", nef_user, nef_pass, "", "", "")
+#     return token
 
 
 def get_host_of_the_nef_emulator() -> str:
     # emulator = config.get("nef", "emulator")
     # em_port = config.get("nef", "em_port")
     nef_address = os.environ['NEF_ADDRESS']
-    return "http://{}".format(nef_address)
+    nef_port = os.environ['NEF_PORT']
+    return "http://{}:{}".format(nef_address, nef_port)
 
 
 def get_host_of_the_callback_server() -> str:
@@ -61,7 +93,8 @@ def get_host_of_the_callback_server() -> str:
     # cb_port = config.get("callback", "cb_port")
     # return "http://{}:{}".format(cb_server, cb_port)
     callback_address = os.environ['CALLBACK_ADDRESS']
-    return "http://{}".format(callback_address)
+    callback_port = os.environ['CALLBACK_PORT']
+    return "http://{}:{}".format(callback_address, callback_port)
 
 
 def get_vapp_server() -> str:
@@ -69,7 +102,8 @@ def get_vapp_server() -> str:
     # vapp_port = config.get("vapp", "vapp_port")
     # return "http://{}:{}/ossimserver/asset/".format(vapp_server, vapp_port)
     vapp_address = os.environ['VAPP_ADDRESS']
-    return "http://{}/ossimserver/asset/".format(vapp_address)
+    vapp_port = os.environ['VAPP_PORT']
+    return "http://{}:{}/ossimserver/asset/".format(vapp_address, vapp_port)
 
 
 class MonitoringCallbackViewSet(mixins.ListModelMixin,
@@ -182,22 +216,15 @@ class CreateMonitoringSubscriptionView(APIView):
     def get(self, request, *args, **kwargs):
 
         times = self.kwargs.get('times')
-        expire_time = (datetime.datetime.utcnow() + datetime.timedelta(days=1)).isoformat() + "Z"
-        netapp_id = "myNetapp"
         host = get_host_of_the_nef_emulator()
-        token = get_token()
-        location_subscriber = LocationSubscriber(host, token.access_token)
-        external_id = "10001@domain.com"
-        callback_host = get_host_of_the_callback_server()
+        nef_user = os.environ['NEF_USER']
+        nef_pass = os.environ['NEF_PASSWORD']
 
-        subscription = location_subscriber.create_subscription(
-            netapp_id=netapp_id,
-            external_id=external_id,
-            notification_destination=callback_host + "/netappserver/api/v1/monitoring/callback/",
-            maximum_number_of_reports=times,
-            monitor_expire_time=expire_time
-        )
-        monitoring_response = subscription.to_dict()
+        token = request_nef_token(host, nef_user, nef_pass)
+        callback_host = get_host_of_the_callback_server() + "/netappserver/api/v1/monitoring/callback/"
+
+        monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
+                                            os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
 
         print(monitoring_response)
 
@@ -228,7 +255,7 @@ class CreateMonitoringSubscriptionView(APIView):
             # status_code = status.HTTP_201_CREATED
 
         else:
-            message = subscription.to_dict()
+            message = monitoring_response
             status_code = status.HTTP_201_CREATED
 
         return Response(message, status=status_code)
@@ -238,7 +265,10 @@ class CellsUpdateView(APIView):
 
     def get(self, request, *args, **kwargs):
         host = get_host_of_the_nef_emulator()
-        token = get_token()
+        nef_user = os.environ['NEF_USER']
+        nef_pass = os.environ['NEF_PASSWORD']
+
+        token = request_nef_token(host, nef_user, nef_pass)
 
         #    Call Monitoring API
         url = host + "/api/v1/Cells?skip=0&limit=100"
@@ -262,6 +292,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
 
+
 class UserDetailAPI(APIView):
   authentication_classes = (TokenAuthentication,)
   permission_classes = (AllowAny,)
@@ -271,10 +302,12 @@ class UserDetailAPI(APIView):
     print(Response(serializer.data))
     return Response(serializer.data)
 
+
 class RegisterView(generics.CreateAPIView):
     # queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
+
 
 # class LoginView(APIView):
 #     # This view should be accessible also for unauthenticated users.
@@ -287,11 +320,13 @@ class RegisterView(generics.CreateAPIView):
 #         login(request, user)
 #         return Response(None, status=status.HTTP_202_ACCEPTED)
 
+
 class ProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
     def get_object(self):
         return self.request.user
+
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
@@ -301,6 +336,7 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 class UserLogIn(ObtainAuthToken):
     permission_classes = (permissions.AllowAny,)
@@ -315,6 +351,7 @@ class UserLogIn(ObtainAuthToken):
             'id': user.pk,
             'username': user.username
         })
+
 
 class UserRegister(generics.GenericAPIView):
     serializer_class = RegisterSerializer
@@ -340,6 +377,7 @@ class UserRegister(generics.GenericAPIView):
         # return super().post(request, *args, **kwargs)
 #username=data['username'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=['last_name']
 
+
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
@@ -351,6 +389,7 @@ class RegisterAPI(generics.GenericAPIView):
         "user": UserSerializer(user, context=self.get_serializer_context()).data,
         # "token": Token.objects.create(user)[1]
         })
+
 
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
@@ -366,6 +405,7 @@ class RegistrationAPIView(APIView):
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
 class LoginAPIView(APIView):
     permission_classes = (AllowAny,)
