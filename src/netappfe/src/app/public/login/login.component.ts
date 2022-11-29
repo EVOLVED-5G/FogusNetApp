@@ -43,7 +43,8 @@ export class LoginComponent implements OnInit {
             }
             this.isLoginFailed = false;
             this.isLoggedIn = true;
-            this.router.navigate(['/dashboard']);
+            this.authService.user();
+            // this.router.navigate(['/dashboard']);
           },
           error: (error: any) => {
             console.log(error);

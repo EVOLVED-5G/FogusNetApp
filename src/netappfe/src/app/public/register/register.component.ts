@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {AbstractControl,FormBuilder, FormGroup, Validators, FormControl} from "@angular/forms";
 import { AuthService } from 'src/app/services/auth.service';
 import Validation from 'src/app/public/utils/validation_form';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -24,7 +25,7 @@ export class RegisterComponent implements OnInit {
   errorMessage = '';
   dataJson: any;
 
-  constructor(private formBulder: FormBuilder, private authService: AuthService) { }
+  constructor(private formBulder: FormBuilder, private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.form = this.formBulder.group(
@@ -50,6 +51,9 @@ export class RegisterComponent implements OnInit {
       next: (res: any) =>{
       this.isSuccessful = true;
       this.isSignUpFailed = false;
+      setTimeout(() => {
+        this.router.navigate(['/sign-in']);
+      }, 6000);
       },
       error: (err: { error: { message: string; }; }) => {
         this.errorMessage = err.error.message;

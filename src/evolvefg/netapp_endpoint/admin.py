@@ -23,7 +23,7 @@ class CellAdmin (admin.ModelAdmin):
 
 
 
-# admin.site.register(User)
+admin.site.register(User)
 
 
 # @admin.register(User)

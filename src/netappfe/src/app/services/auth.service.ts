@@ -32,4 +32,9 @@ export class AuthService {
   user(){
     return this.http.get(environment.api + '/user', {withCredentials: true});
   }
+
+  // isLoggedIn = false;
+  // isAuthenticated(){
+  //   return this.isLoggedIn;
+  // }
 }

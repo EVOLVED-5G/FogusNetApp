@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_extensions',
     'rest_framework',
+    'jwt',
     'corsheaders',
     'netapp_endpoint',
 ]
