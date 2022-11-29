@@ -11,28 +11,16 @@ https://github.com/EVOLVED-5G/NEF_emulator
 sudo apt install -y jq
 ```
 
-## Create properties file
-Create a file named **_db_template.properties_** inside "src/evolvedfg" folder, with format:
-```properties
-# Database Configuration
-[nef]
-nef_user=<NEF host username>
-nef_pass=<NEF host password>
-emulator=<NEF hostname or IP>
-em_port=<NEF backend port>
+## Configure environmental variables 
+Edit [env_to_copy.dev](./env_to_copy.dev)
 
-[vapp]
-vapp_server=<VApp REST endpoint IP>
-vapp_port=<VApp REST endpoint Port>
 
-[callback]
-cb_server=<Callback server hostname or IP>
-cb_port=<Callback server port>
+## Deploy Network App 
 ```
 
 ## Deploy the NetApp
 ```bash
-cd FogusNetApp/src
+cd FogusNetApp
 
 # Build and deploy containers
 ./run.sh

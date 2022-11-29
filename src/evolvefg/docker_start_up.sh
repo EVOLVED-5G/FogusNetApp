@@ -4,6 +4,8 @@
 #echo "Collect static files"
 #python manage.py collectstatic --noinput
 
+evolved5g register-and-onboard-to-capif --config_file_full_path="/code/capif_registration.json"
+
 # Make migrations
 echo "Making migrations"
 python3 manage.py makemigrations --noinput

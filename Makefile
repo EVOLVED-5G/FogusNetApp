@@ -18,7 +18,7 @@ run-dev:
 	@ cp env_to_copy.dev .env
 	@ $(DOCKER_COMPOSE) up -d --remove-orphans --build
 	@ sleep 10 && echo "Sleeping for 10s...."
-	@ curl -X GET 192.168.1.4:8000/netappserver/api/v1/cells/update/
+	@ curl -X GET 192.168.1.7:8000/netappserver/api/v1/cells/update/
 
 guard-%:
         @ [ "${${*}}" = "" ] && echo "No $* detected" && exit 1 || :

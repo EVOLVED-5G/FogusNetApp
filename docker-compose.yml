@@ -13,7 +13,7 @@ services:
     container_name: netappdjango
     build:
       context: ./src/evolvefg
-    command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh"]
+    command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh", "&&", "sh", "prepare.sh"]
     ports:
       - 8000:8000
     volumes:
@@ -22,6 +22,9 @@ services:
       - .env
     depends_on:
       - dbnetapp
+    extra_hosts:
+      - host.docker.internal:host-gateway
+      - capifcore:host-gateway
   netappfe:
     image: netappfe
     container_name: netappfe

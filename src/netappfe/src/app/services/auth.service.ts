@@ -14,19 +14,19 @@ export class AuthService {
 
   constructor(private http: HttpClient) { }
 
-  login(data:any){ 
-    return this.http.post('http://localhost:8000/api/login/', data) ;
+  login(data:any){
+    return this.http.post('http://192.168.1.7:8000/api/login/', data) ;
   }
 
-  register(data:any) { 
+  register(data:any) {
     console.log(data);
-    return this.http.post('http://localhost:8000/api/register/', data);
+    return this.http.post('http://192.168.1.7:8000/api/register/', data);
     // return this.http.post('/register', data);
     // return this.http.post('${environment.backend}/register', data);
   }
 
   logout(): Observable<any> {
-    return this.http.post('http://localhost:8000/api-auth/logout/' + 'signout', { }, httpOptions);
+    return this.http.post('http://192.168.1.7:8000/api-auth/logout/' + 'signout', { }, httpOptions);
   }
 
   user(){
