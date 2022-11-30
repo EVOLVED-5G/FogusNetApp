@@ -8,6 +8,7 @@ const API_URL = 'http://localhost:8080/api/test/';
   providedIn: 'root',
 })
 export class UserService {
+  loggedIn = false;
   constructor(private http: HttpClient) {}
 
   getPublicContent(): Observable<any> {
@@ -27,6 +28,6 @@ export class UserService {
   }
 
   isLoggedIn(): boolean {
-    return false;
+    return this.loggedIn;
   }
 }

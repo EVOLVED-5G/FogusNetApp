@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { PublicModule } from './public/public.module';
 import { SecureModule } from './secure/secure.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import {AuthGuard} from './services/guarding'
 
 
 @NgModule({
@@ -19,7 +20,7 @@ import { ReactiveFormsModule } from '@angular/forms';
     PublicModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

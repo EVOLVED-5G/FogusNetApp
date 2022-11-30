@@ -53,7 +53,7 @@ export class RegisterComponent implements OnInit {
       this.isSignUpFailed = false;
       setTimeout(() => {
         this.router.navigate(['/sign-in']);
-      }, 6000);
+      }, 4000);
       },
       error: (err: { error: { message: string; }; }) => {
         this.errorMessage = err.error.message;

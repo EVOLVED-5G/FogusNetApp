@@ -44,12 +44,14 @@ export class LoginComponent implements OnInit {
             this.isLoginFailed = false;
             this.isLoggedIn = true;
             this.authService.user();
-            // this.router.navigate(['/dashboard']);
+            this.router.navigate(['/dashboard']);
           },
           error: (error: any) => {
             console.log(error);
             this.isLoginFailed = true;
-            // this.reloadPage();
+            setTimeout(() => {
+              this.reloadPage();
+            }, 2000);
           }
         }
       );

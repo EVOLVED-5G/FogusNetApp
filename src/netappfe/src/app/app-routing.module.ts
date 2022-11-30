@@ -24,8 +24,7 @@ const routes: Routes = [
     component: PublicComponent,
     children: [
       {path: 'sign-in', component: LoginComponent},
-      {path: 'sign-up', component: RegisterComponent},
-      // { path: 'user-profile/:id', component: UserProfileComponent },
+      {path: 'sign-up', component: RegisterComponent}
     ]
   }
 ];

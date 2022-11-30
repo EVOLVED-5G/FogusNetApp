@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http'
 import { environment } from '../../environments/environment';
+import {UserService} from "src/app/services/user.service";
 import { Observable } from 'rxjs';
 
 const httpOptions = {
@@ -12,29 +13,23 @@ const httpOptions = {
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private userService: UserService) { }
 
   login(data:any){
-    return this.http.post('http://192.168.1.16:8000/api/login/', data) ;
+    this.userService.loggedIn = true;
+    return this.http.post('http://localhost:8000/api/login/', data) ;
   }
 
   register(data:any) {
-    console.log(data);
-    return this.http.post('http://192.168.1.7:8000/api/register/', data);
-    // return this.http.post('/register', data);
-    // return this.http.post('${environment.backend}/register', data);
+    return this.http.post('http://localhost:8000/api/register/', data);
   }
 
   logout(): Observable<any> {
-    return this.http.post('http://192.168.1.7:8000/api-auth/logout/' + 'signout', { }, httpOptions);
+    return this.http.post('http://localhost:8000/api-auth/logout/' + 'signout', { }, httpOptions);
   }
 
   user(){
     return this.http.get(environment.api + '/user', {withCredentials: true});
   }
 
-  // isLoggedIn = false;
-  // isAuthenticated(){
-  //   return this.isLoggedIn;
-  // }
 }
