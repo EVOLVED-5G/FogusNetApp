@@ -1,24 +1,30 @@
 <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
 <div class="col-md-8 order-md-1">
-<h4 class="mb-3">Create a subscription</h4>
-<form [formGroup]="form" (submit)="submit()">
+<h2 class="mb-3" style="text-align:center;">Create a subscription</h2>
+<form [formGroup]="form" novalidate (submit)="submit()">
     <div class="row">
-        <div class="col-md-6 mb-3">
-            <input type="text" formControlName="callback_times" class="form-control" id="callback_times" placeholder="" >
-            <label for="callback_times">Number of Monitoring callbacks</label>
-        </div>
+        <input type="number" formControlName="callback_times" class="form-control" id="callback_times" placeholder="Number of callbacks" required autofocus>
+        <label for="callback_times" style="text-align: center;">Number of Monitoring callbacks</label>
         <div class="col-md-6 mb-3" *ngIf="isCorrect">
             <img class="mb-4" src="../../../assets/check.svg" alt="" width="60" height="40">
         </div>
+        <div class="selection">
+            <!-- <label for="selectedUE" style="text-align: center;">Select a UE</label> -->
+            <select formControlName="UE_selected" #UEselect (change)="onSelected(UEselect.value)">
+                <option [ngValue]="null" disabled>Select UE</option>
+                <option *ngFor="let UE_selected of UEs" [ngValue]="UE_selected.name">{{UE_selected.name}}</option>
+            </select>
+        </div>
+        <!-- <label for="UEs">Select a UE:</label> -->
         <!-- <div class="col-md-6 mb-3">
             <label for="lastName">Last name</label>
             <input type="text" class="form-control" id="lastName" placeholder="" value="" required>
             <div class="invalid-feedback">
-            Valid last name is required.
+                Valid last name is required.
             </div>
         </div> -->
     </div>
-
+    
     <!-- <div class="mb-3">
     <label for="username">Username</label>
     <div class="input-group">
@@ -81,6 +87,7 @@
         </div>
     </div>
     </div> -->
-
-    <button class="btn btn-primary btn-lg btn-block" type="submit">Subscribe</button>
+    <div class="d-flex justify-content-center .align-content-md-stretch .align-self-center">
+        <button class="btn btn-primary btn-lg" [disabled]="form.invalid" type="submit">Subscribe</button>
+    </div>
 </form>

@@ -1,0 +1,24 @@
+.row{
+    margin: 10px auto;
+    justify-content: center;
+}
+
+.row ul li{
+    justify-content: center;
+    align-self: center;
+}
+
+.form-control{
+    border-radius: 8px;
+    width:200px;
+    text-align: center;
+}
+
+.selection, select{
+    border-radius: 8px;
+    display: flex;
+    margin: 10px auto;
+    width: 50%;
+    text-align: center;
+    justify-content: center;
+}

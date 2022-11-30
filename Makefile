@@ -2,19 +2,26 @@ export VERSION ?= 3.0
 DOCKERFILE = Dockerfile
 DOCKER_COMPOSE = docker compose
 
-default: build
+default: run
 build: build-dev
 clean: clean-dev
 run: run-dev
+restart: stop-dev run-dev
+fresh: clean-dev run-dev
 
-clean-dev:
+stop-dev:
+	$(DOCKER_COMPOSE) down --rmi all --remove-orphans || true
+
+clean-dev: stop-dev
+	@ echo "May need to give password to remove database and migrations"
+	@ [ -d ./src/data ] && sudo rm -R ./src/data/ || :
+	@ [ -f .env ] && sudo rm .env || :
+	@ [ -d ./src/evolvefg/netapp_endpoint/migrations ] && sudo rm -R ./src/evolvefg/netapp_endpoint/migrations/* || :
+	@ [ -d ./src/evolvefg/capif_onboarding ] && sudo rm ./src/evolvefg/capif_onboarding/* || :
 	
 build-dev: clean-dev
 
-
-run-dev:
-	@ [ -f .env ] && docker ps | grep netapp > /dev/null && $(DOCKER_COMPOSE) stop || echo "Skipping $(DOCKER_COMPOSE) stop"
-	@ [ -f ./src/data ] && ./cleanup_docker_containers.sh || :
+run-dev: stop-dev
 	@ cp env_to_copy.dev .env
 	@ $(DOCKER_COMPOSE) up -d --remove-orphans --build
 	@ sleep 10 && echo "Sleeping for 10s...."

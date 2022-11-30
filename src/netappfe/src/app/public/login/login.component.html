@@ -6,10 +6,10 @@
       <h1 class="h3 mb-3 fw-normal">Sign in</h1>
   
       <div class="form-floating">
-        <input type="text" formControlName="email" class="form-control" id="email" placeholder="Username" required autofocus>
+        <input type="text" formControlName="email" class="form-control" id="email" placeholder="Email" required autofocus>
         <label for="Email" >Email</label>
         <div *ngIf="form.controls['email'].errors && (form.controls['email'].dirty || form.controls['email'].touched)">
-        <p *ngIf="form.controls['email'].errors?.['required']" style="color:red">Username is required</p> </div>
+        <p *ngIf="form.controls['email'].errors?.['required']" style="color:red">Email is required</p> </div>
       </div>
       <div class="form-floating">
         <input type="password" formControlName="password" class="form-control" id="floatingPassword" placeholder="Password" required autofocus>
