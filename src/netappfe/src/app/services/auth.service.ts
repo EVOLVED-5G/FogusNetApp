@@ -15,7 +15,7 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   login(data:any){
-    return this.http.post('http://192.168.1.7:8000/api/login/', data) ;
+    return this.http.post('http://192.168.1.16:8000/api/login/', data) ;
   }
 
   register(data:any) {

@@ -6,15 +6,17 @@ import { RegisterComponent } from './public/register/register.component';
 import { DashbardComponent } from './secure/dashbard/dashbard.component';
 import { MonitorSubscriptionComponent } from './secure/monitor-subscription/monitor-subscription.component';
 import { SecureComponent } from './secure/secure.component';
+import {AuthGuard} from 'src/app/services/guarding'
 
 const routes: Routes = [
   {
     path: '', 
     component: SecureComponent,
+    canActivate:[AuthGuard],
     children: [
-      {path: '', redirectTo: '/sign-in', pathMatch: 'full'},
-      {path: 'dashboard', component: DashbardComponent},
-      {path: 'monitorsubscribe', component: MonitorSubscriptionComponent},
+      // {path: '', redirectTo: '/sign-in', pathMatch: 'full'},
+      {path: 'dashboard', component: DashbardComponent,canActivateChild:[AuthGuard]},
+      {path: 'monitorsubscribe', component: MonitorSubscriptionComponent,canActivateChild:[AuthGuard]}
     ]
   },
   {
