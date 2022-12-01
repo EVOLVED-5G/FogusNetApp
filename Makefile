@@ -3,10 +3,10 @@ DOCKERFILE = Dockerfile
 DOCKER_COMPOSE = docker compose
 
 default: run
-build: build-dev
 clean: clean-dev
+build: build-dev
 run: run-dev
-restart: run-dev
+restart: stop-dev run-dev
 fresh: clean-dev run-dev
 
 stop-dev:
@@ -21,7 +21,7 @@ clean-dev: stop-dev
 	
 build-dev: clean-dev
 
-run-dev: stop-dev
+run-dev:
 	@ cp env_to_copy.dev .env
 	@ $(DOCKER_COMPOSE) up -d --remove-orphans --build
 	@ sleep 10 && echo "Sleeping for 10s...."
@@ -30,4 +30,4 @@ run-dev: stop-dev
 guard-%:
         @ [ "${${*}}" = "" ] && echo "No $* detected" && exit 1 || :
 
-.PHONY: clean-dev build-dev
+.PHONY: default clean build run restart fresh

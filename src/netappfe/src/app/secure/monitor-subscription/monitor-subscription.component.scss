@@ -1,11 +1,15 @@
-.row{
-    margin: 10px auto;
+.callback-container {
     justify-content: center;
+    text-align:center;
 }
 
-.row ul li{
-    justify-content: center;
-    align-self: center;
+.callback-row{
+    // margin: 10px auto;
+    margin: 0 auto;
+    width:fit-content;
+    display: flex;
+    flex-direction: row;
+    padding: 0;
 }
 
 .form-control{
