@@ -10,3 +10,6 @@ src/evolvefg/netapp_endpoint/migrations/*
 src/netappfe/.angular/*
 src/netappfe/src/assets/env.js
 .env
+src/evolvefg/capif_onboarding/*
+!src/evolvefg/capif_onboarding/.gitkeep
+src/evolvefg/capif_registration.json

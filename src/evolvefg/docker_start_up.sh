@@ -4,19 +4,23 @@
 #echo "Collect static files"
 #python manage.py collectstatic --noinput
 
+evolved5g register-and-onboard-to-capif --config_file_full_path="/code/capif_registration.json"
+
 # Make migrations
 echo "Making migrations"
-python manage.py makemigrations --noinput
+python3 manage.py makemigrations --noinput
 echo "Making migrations for custom apps..."
-python manage.py makemigrations netapp_endpoint
+python3 manage.py makemigrations netapp_endpoint
 
 # Apply database migrations
 echo "Apply database migrations"
-python manage.py migrate
+python3 manage.py migrate
 
 echo "Creating superUser..."
-echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')" | python manage.py shell
+# winpty docker-compose run python manage.py createsuperuser | python manage.py shell
+# echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')" | python manage.py shell
+echo "from netapp_endpoint.models import User; User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')" | python manage.py shell
 
 # Start server
 echo "Starting server"
-python manage.py runserver 0.0.0.0:8000 
+python3 manage.py runserver 0.0.0.0:8000

@@ -5,6 +5,8 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { PublicModule } from './public/public.module';
 import { SecureModule } from './secure/secure.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import {AuthGuard} from './services/guarding'
 
 
 @NgModule({
@@ -16,8 +18,9 @@ import { SecureModule } from './secure/secure.module';
     AppRoutingModule,
     SecureModule,
     PublicModule,
+    ReactiveFormsModule
   ],
-  providers: [],
+  providers: [AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

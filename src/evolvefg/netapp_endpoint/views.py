@@ -1,7 +1,12 @@
-from rest_framework import status
+from rest_framework import status, views, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import permissions, viewsets, mixins
+from rest_framework.permissions import AllowAny, IsAuthenticated
+# from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from rest_framework.authentication import TokenAuthentication
+from rest_framework import generics
 from .serializers import *
 from .models import *
 import mariadb
@@ -17,30 +22,70 @@ from evolved5g import swagger_client
 from evolved5g.swagger_client import LoginApi
 from evolved5g.swagger_client.models import Token
 import os
-
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+from rest_framework.status import (
+    HTTP_400_BAD_REQUEST,
+    HTTP_404_NOT_FOUND,
+    HTTP_200_OK
+)
+from .renderers import UserJSONRenderer
+from evolved5g.sdk import LocationSubscriber, QosAwareness, ConnectionMonitor
+from evolved5g.swagger_client import UsageThreshold, Configuration, ApiClient, LoginApi
 
 config = configparser.ConfigParser()
 config.read('db_template.properties')  # it has to be changed with "db_template.properties" when filled
 
 
-def get_token() -> Token:
-    configuration = swagger_client.Configuration()
-    # The host of the 5G API (emulator)
-    configuration.host = get_host_of_the_nef_emulator()
-    api_client = swagger_client.ApiClient(configuration=configuration)
+def request_nef_token(nef_host, username, password):
+    configuration = Configuration()
+    configuration.host = nef_host
+    api_client = ApiClient(configuration=configuration)
     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
     api = LoginApi(api_client)
-    nef_user = os.environ['NEF_USER']
-    nef_pass = os.environ['NEF_PASSWORD']
-    token = api.login_access_token_api_v1_login_access_token_post("", nef_user, nef_pass, "", "", "")
+    token = api.login_access_token_api_v1_login_access_token_post("", username, password, "", "", "")
+
     return token
+
+
+def monitor_subscription(times, host, access_token, certificate_folder, capifhost, capifport, callback_server):
+    expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    netapp_id = "myNetapp"
+    location_subscriber = LocationSubscriber(host, access_token, certificate_folder, capifhost, capifport)
+    external_id = "10001@domain.com"
+
+    subscription = location_subscriber.create_subscription(
+        netapp_id=netapp_id,
+        external_id=external_id,
+        notification_destination=callback_server,
+        maximum_number_of_reports=times,
+        monitor_expire_time=expire_time
+    )
+    monitoring_response = subscription.to_dict()
+
+    return monitoring_response
+
+
+# def get_token() -> Token:
+#     configuration = swagger_client.Configuration()
+#     # The host of the 5G API (emulator)
+#     configuration.host = get_host_of_the_nef_emulator()
+#     api_client = swagger_client.ApiClient(configuration=configuration)
+#     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
+#     api = LoginApi(api_client)
+#     nef_user = os.environ['NEF_USER']
+#     nef_pass = os.environ['NEF_PASSWORD']
+#     token = api.login_access_token_api_v1_login_access_token_post("", nef_user, nef_pass, "", "", "")
+#     return token
 
 
 def get_host_of_the_nef_emulator() -> str:
     # emulator = config.get("nef", "emulator")
     # em_port = config.get("nef", "em_port")
     nef_address = os.environ['NEF_ADDRESS']
-    return "http://{}".format(nef_address)
+    nef_port = os.environ['NEF_PORT']
+    return "http://{}:{}".format(nef_address, nef_port)
 
 
 def get_host_of_the_callback_server() -> str:
@@ -48,7 +93,8 @@ def get_host_of_the_callback_server() -> str:
     # cb_port = config.get("callback", "cb_port")
     # return "http://{}:{}".format(cb_server, cb_port)
     callback_address = os.environ['CALLBACK_ADDRESS']
-    return "http://{}".format(callback_address)
+    callback_port = os.environ['CALLBACK_PORT']
+    return "http://{}:{}".format(callback_address, callback_port)
 
 
 def get_vapp_server() -> str:
@@ -56,7 +102,8 @@ def get_vapp_server() -> str:
     # vapp_port = config.get("vapp", "vapp_port")
     # return "http://{}:{}/ossimserver/asset/".format(vapp_server, vapp_port)
     vapp_address = os.environ['VAPP_ADDRESS']
-    return "http://{}/ossimserver/asset/".format(vapp_address)
+    vapp_port = os.environ['VAPP_PORT']
+    return "http://{}:{}/ossimserver/asset/".format(vapp_address, vapp_port)
 
 
 class MonitoringCallbackViewSet(mixins.ListModelMixin,
@@ -169,22 +216,15 @@ class CreateMonitoringSubscriptionView(APIView):
     def get(self, request, *args, **kwargs):
 
         times = self.kwargs.get('times')
-        expire_time = (datetime.datetime.utcnow() + datetime.timedelta(days=1)).isoformat() + "Z"
-        netapp_id = "myNetapp"
         host = get_host_of_the_nef_emulator()
-        token = get_token()
-        location_subscriber = LocationSubscriber(host, token.access_token)
-        external_id = "10001@domain.com"
-        callback_host = get_host_of_the_callback_server()
+        nef_user = os.environ['NEF_USER']
+        nef_pass = os.environ['NEF_PASSWORD']
 
-        subscription = location_subscriber.create_subscription(
-            netapp_id=netapp_id,
-            external_id=external_id,
-            notification_destination=callback_host + "/netappserver/api/v1/monitoring/callback/",
-            maximum_number_of_reports=times,
-            monitor_expire_time=expire_time
-        )
-        monitoring_response = subscription.to_dict()
+        token = request_nef_token(host, nef_user, nef_pass)
+        callback_host = get_host_of_the_callback_server() + "/netappserver/api/v1/monitoring/callback/"
+
+        monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
+                                            os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
 
         print(monitoring_response)
 
@@ -215,7 +255,7 @@ class CreateMonitoringSubscriptionView(APIView):
             # status_code = status.HTTP_201_CREATED
 
         else:
-            message = subscription.to_dict()
+            message = monitoring_response
             status_code = status.HTTP_201_CREATED
 
         return Response(message, status=status_code)
@@ -225,7 +265,10 @@ class CellsUpdateView(APIView):
 
     def get(self, request, *args, **kwargs):
         host = get_host_of_the_nef_emulator()
-        token = get_token()
+        nef_user = os.environ['NEF_USER']
+        nef_pass = os.environ['NEF_PASSWORD']
+
+        token = request_nef_token(host, nef_user, nef_pass)
 
         #    Call Monitoring API
         url = host + "/api/v1/Cells?skip=0&limit=100"
@@ -241,3 +284,135 @@ class CellsUpdateView(APIView):
             Cell.objects.update_or_create(cellId=cell['cell_id'],latitude=cell['latitude'], longitude=cell['longitude'],)
 
         return Response(parsed, status=status.HTTP_201_CREATED)
+
+# User View Set
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class UserDetailAPI(APIView):
+  authentication_classes = (TokenAuthentication,)
+  permission_classes = (AllowAny,)
+  def get(self,request,*args,**kwargs):
+    user = User.objects.get(id=request.user.id)
+    serializer = UserSerializer(user)
+    print(Response(serializer.data))
+    return Response(serializer.data)
+
+
+class RegisterView(generics.CreateAPIView):
+    # queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
+
+
+# class LoginView(APIView):
+#     # This view should be accessible also for unauthenticated users.
+#     permission_classes = (permissions.AllowAny,)
+#     def post(self, request, format=None):
+#         serializer = LoginSerializer(data=self.request.data,
+#             context={ 'request': self.request })
+#         serializer.is_valid(raise_exception=True)
+#         user = serializer.validated_data['user']
+#         login(request, user)
+#         return Response(None, status=status.HTTP_202_ACCEPTED)
+
+
+class ProfileView(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
+
+class UserList(generics.ListAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserDetail(generics.RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+
+class UserLogIn(ObtainAuthToken):
+    permission_classes = (permissions.AllowAny,)
+    def post(self, request, *args, **kwargs):
+        serializer = LoginSerializer(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token = Token.objects.get(user=user)
+        return Response({
+            'token': token.key,
+            'id': user.pk,
+            'username': user.username
+        })
+
+
+class UserRegister(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        print(request.data)
+        user = serializer.save()
+        # user = User.objects.create(
+        #         username=data['username'],
+        #         email=data['email'],
+        #         first_name=data['first_name'],
+        #         last_name=data['last_name'],
+        #         password=data['password'],
+        #         password_confirm=data['password_confirm']
+        #     )
+        # user.set_password(data['password'])
+        user.save()
+        return Response({
+            'user': user,
+        })
+        # return super().post(request, *args, **kwargs)
+#username=data['username'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=['last_name']
+
+
+class RegisterAPI(generics.GenericAPIView):
+    serializer_class = RegisterSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response({
+        "user": UserSerializer(user, context=self.get_serializer_context()).data,
+        # "token": Token.objects.create(user)[1]
+        })
+
+
+class RegistrationAPIView(APIView):
+    # Allow any user (authenticated or not) to hit this endpoint.
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+
+    def post(self, request):
+        # The create serializer, validate serializer, save serializer pattern
+        # below is common and you will see it a lot throughout this course and
+        # your own work later on. Get familiar with it.
+        serializer = RegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class LoginAPIView(APIView):
+    permission_classes = (AllowAny,)
+    renderer_classes = (UserJSONRenderer,)
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        # print(authenticate(request=request, username=request.data["email"], password=request.data["password"]))
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

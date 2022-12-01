@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/app/services/auth.service';
+import { UserCredentials } from 'src/app/auth';
+
+// import { StorageService } from '../_services/storage.service';
 
 @Component({
   selector: 'app-login',
@@ -11,38 +14,52 @@ import { AuthService } from 'src/app/services/auth.service';
 export class LoginComponent implements OnInit {
 
   form: FormGroup;
+  isLoggedIn: boolean = false;
+  isLoginFailed: boolean = false;
+  errorMessage = '';
+  data: any;
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private authService: AuthService,
-    private router: Router
-    ) { 
+  constructor(private formBuilder: FormBuilder,private authService: AuthService,
+    private router: Router) { }
 
-    }
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      username: '',
-      password: ''
+      email: ['',Validators.required],
+      password: ['',Validators.required]
     });
   }
 
-  submit() {
+  submit() : void {
     const data = this.form.getRawValue()
-
-    if (data.username == 'admin' && data.password == 'admin'){
-      console.log('success')
-      this.router.navigate(['/dashboard'])
+    if (this.form.invalid) {
+      console.log(this.form.errors);
+    } else {
+        this.authService.login(data).subscribe({
+          next: (data: any) => {
+            console.log(data);
+            if (localStorage.getItem('data') !== JSON.stringify(data)) {
+              localStorage.setItem('data', JSON.stringify(data));
+            }
+            this.isLoginFailed = false;
+            this.isLoggedIn = true;
+            this.authService.user();
+            this.router.navigate(['/dashboard']);
+          },
+          error: (error: any) => {
+            console.log(error);
+            this.isLoginFailed = true;
+            setTimeout(() => {
+              this.reloadPage();
+            }, 2000);
+          }
+        }
+      );
     }
-    else{
-      console.log('failure')
-    }
+  }
 
-    // this.authService.login(data).subscribe(
-    //   res => {
-    //     console.log(res)
-    //   }
-    // )
+  reloadPage(): void {
+    window.location.reload();
   }
 
 }

@@ -12,4 +12,9 @@ export class MenuComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  logout(): void {
+    window.sessionStorage.clear();
+  }
+
+
 }
