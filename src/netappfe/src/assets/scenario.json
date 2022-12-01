@@ -65,33 +65,7 @@
   ],
   "UEs": [
     {
-      "name": "UE1",
-      "description": "This is a UE",
-      "ip_address_v4": "10.0.0.1",
-      "ip_address_v6": "::1",
-      "mac_address": "22-00-00-00-00-01",
-      "dnn": "province1.mnc01.mcc202.gprs",
-      "mcc": 202,
-      "mnc": 1,
-      "external_identifier": "10001@domain.com",
-      "speed": "HIGH",
-      "supi": "202010000000001"
-    },
-    {
-      "name": "UE2",
-      "description": "This is a UE",
-      "ip_address_v4": "10.0.0.1",
-      "ip_address_v6": "::1",
-      "mac_address": "22-00-00-00-00-01",
-      "dnn": "province1.mnc01.mcc202.gprs",
-      "mcc": 202,
-      "mnc": 1,
-      "external_identifier": "10001@domain.com",
-      "speed": "HIGH",
-      "supi": "202010000000001"
-    },
-    {
-      "name": "UE3",
+      "name": "UE 10.0.0.1",
       "description": "This is a UE",
       "ip_address_v4": "10.0.0.1",
       "ip_address_v6": "::1",
