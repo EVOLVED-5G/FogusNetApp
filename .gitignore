@@ -12,4 +12,3 @@ src/netappfe/src/assets/env.js
 .env
 src/evolvefg/capif_onboarding/*
 !src/evolvefg/capif_onboarding/.gitkeep
-src/evolvefg/capif_registration.json
