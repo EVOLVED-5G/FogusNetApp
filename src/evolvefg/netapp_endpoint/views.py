@@ -93,8 +93,9 @@ def get_host_of_the_callback_server() -> str:
     # cb_port = config.get("callback", "cb_port")
     # return "http://{}:{}".format(cb_server, cb_port)
     callback_address = os.environ['CALLBACK_ADDRESS']
-    callback_port = os.environ['CALLBACK_PORT']
-    return "http://{}:{}".format(callback_address, callback_port)
+    # callback_port = os.environ['CALLBACK_PORT']
+    # return "http://{}:{}".format(callback_address, callback_port)
+    return "http://{}".format(callback_address)
 
 
 def get_vapp_server() -> str:
@@ -102,8 +103,9 @@ def get_vapp_server() -> str:
     # vapp_port = config.get("vapp", "vapp_port")
     # return "http://{}:{}/ossimserver/asset/".format(vapp_server, vapp_port)
     vapp_address = os.environ['VAPP_ADDRESS']
-    vapp_port = os.environ['VAPP_PORT']
-    return "http://{}:{}/ossimserver/asset/".format(vapp_address, vapp_port)
+    # vapp_port = os.environ['VAPP_PORT']
+    # return "http://{}:{}/ossimserver/asset/".format(vapp_address, vapp_port)
+    return "http://{}/ossimserver/asset/".format(vapp_address)
 
 
 class MonitoringCallbackViewSet(mixins.ListModelMixin,

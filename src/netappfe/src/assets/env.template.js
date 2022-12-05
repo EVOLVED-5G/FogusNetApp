@@ -2,5 +2,7 @@
   window["env"] = window["env"] || {};
   // Environment variables
   //@ts-ignore
-  window["env"]["backend"] = "${CALLBACK_ADDRESS}:${CALLBACK_PORT}";
+  window["env"]["backend"] = "${CALLBACK_ADDRESS}";
+  //@ts-ignore
+  window["env"]["frontend"] = "${FRONTEND_ADDRESS}";
 })(this);

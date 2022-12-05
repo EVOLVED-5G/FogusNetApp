@@ -6,7 +6,8 @@ export const environment = {
   production: false,
   //@ts-ignore
   backend: window["env"]["backend"] || "localhost:8000",
-  api: "http://localhost:4200/"
+  //@ts-ignore
+  api: window["env"]["frontend"] || "localhost:4200"
 };
 
 /*
