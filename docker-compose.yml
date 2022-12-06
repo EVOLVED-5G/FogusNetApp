@@ -13,7 +13,7 @@ services:
     container_name: netappdjango
     build:
       context: ./src/evolvefg
-    command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh", "&&", "sh", "prepare.sh"]
+    command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh"]
     ports:
       - 8000:8000
     volumes:

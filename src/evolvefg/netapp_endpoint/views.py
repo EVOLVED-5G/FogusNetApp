@@ -67,44 +67,18 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
     return monitoring_response
 
 
-# def get_token() -> Token:
-#     configuration = swagger_client.Configuration()
-#     # The host of the 5G API (emulator)
-#     configuration.host = get_host_of_the_nef_emulator()
-#     api_client = swagger_client.ApiClient(configuration=configuration)
-#     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
-#     api = LoginApi(api_client)
-#     nef_user = os.environ['NEF_USER']
-#     nef_pass = os.environ['NEF_PASSWORD']
-#     token = api.login_access_token_api_v1_login_access_token_post("", nef_user, nef_pass, "", "", "")
-#     return token
-
-
 def get_host_of_the_nef_emulator() -> str:
-    # emulator = config.get("nef", "emulator")
-    # em_port = config.get("nef", "em_port")
     nef_address = os.environ['NEF_ADDRESS']
-    nef_port = os.environ['NEF_PORT']
-    return "http://{}:{}".format(nef_address, nef_port)
+    return "http://{}".format(nef_address)
 
 
 def get_host_of_the_callback_server() -> str:
-    # cb_server = config.get("callback", "cb_server")
-    # cb_port = config.get("callback", "cb_port")
-    # return "http://{}:{}".format(cb_server, cb_port)
     callback_address = os.environ['CALLBACK_ADDRESS']
-    # callback_port = os.environ['CALLBACK_PORT']
-    # return "http://{}:{}".format(callback_address, callback_port)
     return "http://{}".format(callback_address)
 
 
 def get_vapp_server() -> str:
-    # vapp_server = config.get("vapp", "vapp_server")
-    # vapp_port = config.get("vapp", "vapp_port")
-    # return "http://{}:{}/ossimserver/asset/".format(vapp_server, vapp_port)
     vapp_address = os.environ['VAPP_ADDRESS']
-    # vapp_port = os.environ['VAPP_PORT']
-    # return "http://{}:{}/ossimserver/asset/".format(vapp_address, vapp_port)
     return "http://{}/ossimserver/asset/".format(vapp_address)
 
 
@@ -283,12 +257,12 @@ class CellsUpdateView(APIView):
         response = requests.request('GET', url, headers=headers)
         parsed = json.loads(response.text)
         for cell in parsed:
-            Cell.objects.update_or_create(cellId=cell['cell_id'],latitude=cell['latitude'], longitude=cell['longitude'],)
+            Cell.objects.update_or_create(cellId=cell['cell_id'], latitude=cell['latitude'], longitude=cell['longitude'])
 
         return Response(parsed, status=status.HTTP_201_CREATED)
 
-# User View Set
 
+# User View Set
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -309,18 +283,6 @@ class RegisterView(generics.CreateAPIView):
     # queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
-
-
-# class LoginView(APIView):
-#     # This view should be accessible also for unauthenticated users.
-#     permission_classes = (permissions.AllowAny,)
-#     def post(self, request, format=None):
-#         serializer = LoginSerializer(data=self.request.data,
-#             context={ 'request': self.request })
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         login(request, user)
-#         return Response(None, status=status.HTTP_202_ACCEPTED)
 
 
 class ProfileView(generics.RetrieveAPIView):
