@@ -31,37 +31,27 @@ class CellSerializer(serializers.HyperlinkedModelSerializer):
         fields = ['id', 'cellId', 'latitude', 'longitude']
 
 # User serialezers
-class RegisterSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
-    username = serializers.CharField(
-        required=True,
-        validators=[UniqueValidator(queryset=User.objects.all())]
-    )
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
-    password_confirm = serializers.CharField(write_only=True, required=True)
+# class RegisterSerializer(serializers.ModelSerializer):
+#     username = serializers.CharField(
+#         required=True,
+#         validators=[UniqueValidator(queryset=User.objects.all())]
+#     )
 
-    class Meta:
-        model = User
-        fields = ["username","first_name", "last_name","email", "password", "password_confirm"]
+#     class Meta:
+#         model = User
+#         fields = ["username","first_name", "last_name","email", "password", "password_confirm"]
 
-    def validate(self, attrs):
-        if attrs['password'] != attrs['password_confirm']:
-            raise serializers.ValidationError({"password": "Password fields didn't match."})
-        return attrs
 
-    def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-            first_name=validated_data['first_name'],
-            last_name=validated_data['last_name']
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-        return user
+#     def create(self, validated_data):
+#         user = User.objects.create(
+#             username=validated_data['username'],
+#             email=validated_data['email'],
+#             first_name=validated_data['first_name'],
+#             last_name=validated_data['last_name']
+#         )
+#         user.set_password(validated_data['password'])
+#         user.save()
+#         return user
 
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
@@ -69,52 +59,30 @@ class UserSerializer(serializers.ModelSerializer):
     fields = ["first_name", "last_name", "username", "email"]
     read_only_fields = ('username', )
 
-# class LoginSerializer(serializers.Serializer):
-#     username = serializers.CharField(
-#         label="username",
-#         write_only=True
-#     )
-    
-#     password = serializers.CharField(
-#         label="password",
-#         trim_whitespace=False,
-#         write_only=True
-#     )
-
-#     def validate(self, attrs):
-#         username = attrs.get('username')
-#         password = attrs.get('password')
-#         if username and password:
-#             user = authenticate( request=self.context.get('request'),
-#                 username = username ,
-#                 password=password)
-#             if not user:
-#                 # If we don't have a regular user, raise a ValidationError
-#                 msg = 'Access denied: wrong username or password.'
-#                 raise serializers.ValidationError(msg, code='authorization')
-#         else:
-#             msg = 'Both "username" and "password" are required.'
-#             raise serializers.ValidationError(msg, code='authorization')
-#         attrs['user'] = user
-#         return attrs
-
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
-    password = serializers.CharField(
-        max_length=128,
-        min_length=8,
-        write_only=True
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all())]
     )
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password_confirm = serializers.CharField(write_only=True, required=True)
+    # password = serializers.CharField(
+    #     max_length=128,
+    #     min_length=8,
+    #     write_only=True
+    # )
 
     token = serializers.CharField(max_length=255, read_only=True)
     class Meta:
         model = User
-        # List all of the fields that could possibly be included in a request
-        # or response, including fields specified explicitly above.
-        fields = ['email', 'username','password', 'token']
+        fields = ['first_name', 'last_name', 'email', 'username','password', 'password_confirm' ,'token']
 
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
     def create(self, validated_data):
-        # Use the `create_user` method we wrote earlier to create a new user.
         return User.objects.create_user(**validated_data)
 
 class LoginSerializer(serializers.Serializer):

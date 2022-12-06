@@ -21,6 +21,7 @@ export class AuthService {
   }
 
   register(data:any) {
+    console.log(data)
     return this.http.post('http://' + environment.backend + '/api/register/', data);
   }
 
@@ -28,8 +29,8 @@ export class AuthService {
     return this.http.post('http://' + environment.backend + '/api-auth/logout/' + 'signout', { }, httpOptions);
   }
 
-  user(){
-    return this.http.get(environment.api + '/user', {withCredentials: true});
-  }
+  // user(){
+  //   return this.http.get('http://192.168.1.3:4200/user', {withCredentials: true});
+  // }
 
 }

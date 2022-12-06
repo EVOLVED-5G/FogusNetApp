@@ -17,14 +17,12 @@ import socket
 import binascii
 import datetime
 import configparser
-from evolved5g.sdk import LocationSubscriber
 from evolved5g import swagger_client
 from evolved5g.swagger_client import LoginApi
 from evolved5g.swagger_client.models import Token
 import os
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
-from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
@@ -53,8 +51,8 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
     expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     netapp_id = "myNetapp"
     location_subscriber = LocationSubscriber(host, access_token, certificate_folder, capifhost, capifport)
+    print("location subscriber",location_subscriber)
     external_id = "10001@domain.com"
-
     subscription = location_subscriber.create_subscription(
         netapp_id=netapp_id,
         external_id=external_id,
@@ -63,7 +61,6 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
         monitor_expire_time=expire_time
     )
     monitoring_response = subscription.to_dict()
-
     return monitoring_response
 
 
@@ -150,7 +147,7 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
             # Uncomment when testing with VApp
             requests.request('POST', vapp_host, headers=headers, data=payload)
 
-        return super().create(request, *args, **kwargs)
+        return super().create(request,**kwargs)
 
 
 class AnalyticsEventNotificationViewSet(mixins.ListModelMixin,
@@ -216,21 +213,21 @@ class CreateMonitoringSubscriptionView(APIView):
     def get(self, request, *args, **kwargs):
 
         times = self.kwargs.get('times')
+        if not times:
+            print("It has to be a positive number")
+        
         host = get_host_of_the_nef_emulator()
         nef_user = os.environ['NEF_USER']
         nef_pass = os.environ['NEF_PASSWORD']
-
         token = request_nef_token(host, nef_user, nef_pass)
         callback_host = get_host_of_the_callback_server() + "/netappserver/api/v1/monitoring/callback/"
 
         monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
-                                            os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
-
-        print(monitoring_response)
+                                            os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTP'], callback_host)
+        print("monitoring_response",monitoring_response)
 
         if times == 1:
             cellId = monitoring_response['location_info']['cell_id']
-            print(cellId)
             cell = Cell.objects.get(cellId=cellId)
             lat = cell.latitude
             lon = cell.longitude
@@ -249,7 +246,7 @@ class CreateMonitoringSubscriptionView(APIView):
 
             # Uncomment when testing with VApp
             response = requests.request('POST', vapp_host, headers=headers, data=payload)
-            message = json.loads(response.text)
+            message = json.loads(payload) #response.text
             status_code = response.status_code
             # message = monitoring_response
             # status_code = status.HTTP_201_CREATED
@@ -257,7 +254,7 @@ class CreateMonitoringSubscriptionView(APIView):
         else:
             message = monitoring_response
             status_code = status.HTTP_201_CREATED
-
+            
         return Response(message, status=status_code)
 
 
@@ -302,25 +299,6 @@ class UserDetailAPI(APIView):
     print(Response(serializer.data))
     return Response(serializer.data)
 
-
-class RegisterView(generics.CreateAPIView):
-    # queryset = User.objects.all()
-    permission_classes = (AllowAny,)
-    serializer_class = RegisterSerializer
-
-
-# class LoginView(APIView):
-#     # This view should be accessible also for unauthenticated users.
-#     permission_classes = (permissions.AllowAny,)
-#     def post(self, request, format=None):
-#         serializer = LoginSerializer(data=self.request.data,
-#             context={ 'request': self.request })
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         login(request, user)
-#         return Response(None, status=status.HTTP_202_ACCEPTED)
-
-
 class ProfileView(generics.RetrieveAPIView):
     serializer_class = UserSerializer
 
@@ -352,54 +330,12 @@ class UserLogIn(ObtainAuthToken):
             'username': user.username
         })
 
-
-class UserRegister(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        print(request.data)
-        user = serializer.save()
-        # user = User.objects.create(
-        #         username=data['username'],
-        #         email=data['email'],
-        #         first_name=data['first_name'],
-        #         last_name=data['last_name'],
-        #         password=data['password'],
-        #         password_confirm=data['password_confirm']
-        #     )
-        # user.set_password(data['password'])
-        user.save()
-        return Response({
-            'user': user,
-        })
-        # return super().post(request, *args, **kwargs)
-#username=data['username'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=['last_name']
-
-
-class RegisterAPI(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        return Response({
-        "user": UserSerializer(user, context=self.get_serializer_context()).data,
-        # "token": Token.objects.create(user)[1]
-        })
-
-
 class RegistrationAPIView(APIView):
     # Allow any user (authenticated or not) to hit this endpoint.
     permission_classes = (AllowAny,)
     renderer_classes = (UserJSONRenderer,)
 
     def post(self, request):
-        # The create serializer, validate serializer, save serializer pattern
-        # below is common and you will see it a lot throughout this course and
-        # your own work later on. Get familiar with it.
         serializer = RegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -412,7 +348,7 @@ class LoginAPIView(APIView):
     renderer_classes = (UserJSONRenderer,)
 
     def post(self, request):
+        print(request.data)
         serializer = LoginSerializer(data=request.data)
-        # print(authenticate(request=request, username=request.data["email"], password=request.data["password"]))
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

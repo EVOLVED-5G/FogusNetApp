@@ -20,19 +20,20 @@
         </div>
         
         <div class="form-floating">
-          <input type="text" class="form-control" formControlName="username"  id="userName" placeholder="Userame" required autofocus>
-          <label for="userName">Username</label>
-          <div *ngIf="form.controls['username'].errors && (form.controls['username'].dirty || form.controls['username'].touched)">
-            <p *ngIf="form.controls['username'].errors?.['required']" style="color:red">Username is required</p> </div>
-        </div>
-
-        <div class="form-floating">
           <input type="email" class="form-control" formControlName="email" id="inputEmail" placeholder="Email address" required autofocus>
           <label for="inputEmail">Email address</label>
           <div *ngIf="form.controls['email'].errors && (form.controls['email'].dirty || form.controls['email'].touched)">
             <p *ngIf="form.controls['email'].errors?.['required']" style="color:red">Email is required</p> 
             <p *ngIf="form.controls['email'].errors?.['pattern']" style="color:red">Please provide a valid email address </p> </div>
         </div>
+        
+        <div class="form-floating">
+          <input type="text" class="form-control" formControlName="username"  id="userName" placeholder="Userame" required autofocus>
+          <label for="userName">Username</label>
+          <div *ngIf="form.controls['username'].errors && (form.controls['username'].dirty || form.controls['username'].touched)">
+            <p *ngIf="form.controls['username'].errors?.['required']" style="color:red">Username is required</p> </div>
+        </div>
+
 
         <div class="form-floating">
           <input type="password" class="form-control" formControlName="password" id="inputPassword" placeholder="Password" required>

@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
-from .views import RegisterView, UserDetailAPI
+# from .views import RegisterView, UserDetailAPI
 from . import views
 
 monitoring_callback_router = routers.SimpleRouter()
@@ -15,7 +15,7 @@ urlpatterns = [
     path(r'api/v1/analytics/callback/', include(analytics_callback_router.urls)),
     path(r'api/v1/monitoring/subscribe/<int:times>/', views.CreateMonitoringSubscriptionView.as_view(), name='monitoringsubscription'),
     path(r'api/v1/cells/update/', views.CellsUpdateView.as_view(), name='cellsupdate'),
-    path('get-details/',UserDetailAPI.as_view()),
+    # path('get-details/',UserDetailAPI.as_view()),
     path('login/', views.LoginAPIView.as_view()),
     path('register/',views.RegistrationAPIView.as_view()),
     # path('accounts/', include('django.contrib.auth.urls')),

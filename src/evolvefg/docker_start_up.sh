@@ -23,7 +23,7 @@ python3 manage.py migrate
 echo "Creating superUser..."
 # winpty docker-compose run python manage.py createsuperuser | python manage.py shell
 # echo "from django.contrib.auth.models import User; User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')" | python manage.py shell
-echo "from netapp_endpoint.models import User; User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')" | python manage.py shell
+echo "from netapp_endpoint.models import User; User.objects.create_superuser('admin','admin', 'admin@gmail.com','admin','admin')" | python manage.py shell
 
 # Start server
 echo "Starting server"

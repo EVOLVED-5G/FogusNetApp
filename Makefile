@@ -28,6 +28,6 @@ run-dev:
 	@ curl -s -o /dev/null -X GET 192.168.1.7:8000/netappserver/api/v1/cells/update/
 
 guard-%:
-        @ [ "${${*}}" = "" ] && echo "No $* detected" && exit 1 || :
+	@ [ "${${*}}" = "" ] && echo "No $* detected" && exit 1 || :
 
 .PHONY: default clean build run restart fresh
