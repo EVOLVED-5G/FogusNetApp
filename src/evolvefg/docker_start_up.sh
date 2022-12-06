@@ -21,7 +21,7 @@ echo "Apply database migrations"
 python3 manage.py migrate
 
 echo "Creating superUser..."
-echo "from netapp_endpoint.models import User; User.objects.create_superuser('admin', 'admin@gmail.com', 'admin')" | python manage.py shell
+echo "from netapp_endpoint.models import User; User.objects.create_superuser('admin','admin', 'admin@gmail.com','admin','admin')" | python manage.py shell
 
 echo "Populating Cells of Fogus scenario..."
 python manage.py loaddata cells_fogus_scenario.json

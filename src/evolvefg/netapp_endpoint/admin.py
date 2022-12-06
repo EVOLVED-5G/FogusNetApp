@@ -21,11 +21,4 @@ class AnalyticsEventNotificationAdmin (admin.ModelAdmin):
 class CellAdmin (admin.ModelAdmin):
     list_display = ['id', 'cellId', 'latitude', 'longitude']
 
-
-
 admin.site.register(User)
-
-
-# @admin.register(User)
-# class UserAdmin (admin.ModelAdmin):
-#     list_display = ['first_name','last_name', 'username', 'email']

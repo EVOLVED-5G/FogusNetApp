@@ -18,10 +18,10 @@
             </div>
         </div> -->
     <div class="selection">
-        <!-- <label for="selectedUE" style="text-align: center;">Select a UE</label> -->
-        <select formControlName="UE_selected" #UEselect (change)="onSelected(UEselect.value)">
+        <select formControlName="UE_selected" #UEselect (change)="onSelected(UEselect.value)" required>
             <option [ngValue]="null" disabled>Select UE</option>
             <option *ngFor="let UE_selected of UEs" [ngValue]="UE_selected.name">{{UE_selected.name}}</option>
+            <!-- <p *ngIf="form.UE['UE_selected'].errors?.['required']" style="color:red">UE is required</p> -->
         </select>
     </div>
 

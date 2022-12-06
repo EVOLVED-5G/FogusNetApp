@@ -89,28 +89,24 @@ class Cell (models.Model):
 
 class UserManager(BaseUserManager):
   # pass
-  def create_user(self, username, email, password=None):
+  def create_user(self, first_name, last_name, email, username, password=None, password_confirm=None):
     if username is None:
       raise TypeError('Users must have a username.')
 
     if email is None:
       raise TypeError('Users must have an email address.')
     
-    user = self.model(username=username, email=self.normalize_email(email))
+    user = self.model(username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name)
     # user = self.models(username=username, email=self.normalize_email(email), password=password, **other)
     user.set_password(password)
     user.save()
 
     return user
 
-  def create_superuser(self, username, email, password):
+  def create_superuser(self, first_name, last_name, email, username, password):
     if password is None:
       raise TypeError('Superusers must have a password.')
-
-    # other.setdefault('is_staff', True)
-    # other.setdefault('is_superuser', True)
-    # other.setdefault('is_active', True)
-    user = self.create_user(username, email, password)
+    user = self.create_user(first_name=first_name, last_name=last_name,  email=email, username=username, password=password)
     user.is_superuser = True
     user.is_staff = True
     user.save()
@@ -119,13 +115,12 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-  username = models.CharField(db_index=True, max_length=255, unique=True)
-  email = models.EmailField(db_index=True, unique=True)
-  password = models.CharField(max_length=100)
   first_name = models.CharField(max_length=50)
   last_name = models.CharField(max_length=50)
-  # created_at = models.DateTimeField(auto_now_add=True)
-  # updated_at = models.DateTimeField(auto_now=True)
+  email = models.EmailField(db_index=True, unique=True)
+  username = models.CharField(db_index=True, max_length=255, unique=True)
+  password = models.CharField(max_length=100)
+  password_confirm = models.CharField(max_length=100)
   is_staff = models.BooleanField(default=False)
   is_active = models.BooleanField(default=True)
   is_superuser = models.BooleanField(default=False)
@@ -146,7 +141,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
   def get_short_name(self):
     return self.username
-
+  
   def _generate_jwt_token(self):
     dt = datetime.now() + timedelta(days=60)
     token = jwt.encode({
