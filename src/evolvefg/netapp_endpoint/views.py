@@ -33,6 +33,8 @@ from rest_framework.status import (
 from .renderers import UserJSONRenderer
 from evolved5g.sdk import LocationSubscriber, QosAwareness, ConnectionMonitor
 from evolved5g.swagger_client import UsageThreshold, Configuration, ApiClient, LoginApi
+import re
+
 
 config = configparser.ConfigParser()
 config.read('db_template.properties')  # it has to be changed with "db_template.properties" when filled
@@ -48,13 +50,12 @@ def request_nef_token(nef_host, username, password):
 
     return token
 
-
+### For location reporting ###
 def monitor_subscription(times, host, access_token, certificate_folder, capifhost, capifport, callback_server):
     expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     netapp_id = "myNetapp"
     location_subscriber = LocationSubscriber(host, access_token, certificate_folder, capifhost, capifport)
     external_id = "10001@domain.com"
-
     subscription = location_subscriber.create_subscription(
         netapp_id=netapp_id,
         external_id=external_id,
@@ -63,9 +64,26 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
         monitor_expire_time=expire_time
     )
     monitoring_response = subscription.to_dict()
-
     return monitoring_response
 
+### For UE reachability and  loss of connectivity ###
+def connection_monitor_subscription(times, MonitoringType_selected, host, access_token, certificate_folder, capifhost, capifport, callback_server):
+    expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+    netapp_id = "myNetapp"
+    monitoring_subscriber = ConnectionMonitor(host, access_token, certificate_folder, capifhost, capifport)
+    external_id = "10001@domain.com"
+    
+    subscription = monitoring_subscriber.create_subscription(
+        netapp_id=netapp_id,
+        external_id=external_id,
+        notification_destination=callback_server,
+        maximum_number_of_reports=times,
+        monitor_expire_time=expire_time,
+        monitoring_type=MonitoringType_selected,
+        wait_time_before_sending_notification_in_seconds=2
+    )
+    monitoring_response = subscription.to_dict()
+    return monitoring_response
 
 def get_host_of_the_nef_emulator() -> str:
     nef_address = os.environ['NEF_ADDRESS']
@@ -100,33 +118,31 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
 
     def create(self, request, *args, **kwargs):
         monitoringType = request.data["monitoringType"]
-        if monitoringType == "LOSS_OF_CONNECTIVITY":
-            pass
-        elif monitoringType == "LOCATION_REPORTING":
+        if monitoringType == "LOCATION_REPORTING":
             ipv4Addr = request.data["ipv4Addr"]
             externalId = request.data["externalId"]
             cellId = request.data["locationInfo"]["cellId"]
-
             cell = Cell.objects.get(cellId=cellId)
             lat = cell.latitude
             lon = cell.longitude
-
-            vapp_host = get_vapp_server()
             payload = json.dumps({
                 "external_id": externalId,
                 "ipv4_addr": ipv4Addr,
                 "latitude": lat,
                 "longitude": lon
             })
-
-            headers = {
-                'Content-Type': 'application/json'
-            }
-
-            # Uncomment when testing with VApp
-            requests.request('POST', vapp_host, headers=headers, data=payload)
-
-        return super().create(request, *args, **kwargs)
+        else:
+            ipv4Addr = request.data["ipv4Addr"]
+            externalId = request.data["externalId"]
+        
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        # Uncomment when testing with VApp
+        # vapp_host = get_vapp_server()
+        # requests.request('POST', vapp_host, headers=headers, data=payload)
+        super().create(request,*args, **kwargs)
+        return Response({"ack" : "TRUE"})
 
 
 class AnalyticsEventNotificationViewSet(mixins.ListModelMixin,
@@ -190,33 +206,42 @@ class CellViewSet(mixins.ListModelMixin,
 class CreateMonitoringSubscriptionView(APIView):
 
     def get(self, request, *args, **kwargs):
-
-        times = self.kwargs.get('times')
+        print(request)
+        answer = self.kwargs.get('string')
+        answer_dict = answer.split("+")
+        times = answer_dict[0]
+        UE_selected = answer_dict[1]
+        MonitoringType_selected = answer_dict[2]
         host = get_host_of_the_nef_emulator()
         nef_user = os.environ['NEF_USER']
         nef_pass = os.environ['NEF_PASSWORD']
-
         token = request_nef_token(host, nef_user, nef_pass)
         callback_host = get_host_of_the_callback_server() + "/netappserver/api/v1/monitoring/callback/"
-
-        monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
+        if MonitoringType_selected == "LOCATION_REPORTING":
+            monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
                                             os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
-
-        print(monitoring_response)
+        elif MonitoringType_selected == "UE_REACHABILITY":
+            monitoring_type = ConnectionMonitor.MonitoringType.INFORM_WHEN_CONNECTED 
+            monitoring_response = connection_monitor_subscription(int(times),monitoring_type, host, token.access_token, os.environ['PATH_TO_CERTS'],
+                                            os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
+        else:
+            monitoring_type = ConnectionMonitor.MonitoringType.INFORM_WHEN_NOT_CONNECTED 
+            monitoring_response = connection_monitor_subscription(int(times),monitoring_type, host, token.access_token, os.environ['PATH_TO_CERTS'],
+                                            os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
 
         if times == 1:
             cellId = monitoring_response['location_info']['cell_id']
-            print(cellId)
             cell = Cell.objects.get(cellId=cellId)
             lat = cell.latitude
             lon = cell.longitude
 
-            vapp_host = get_vapp_server()
+            # vapp_host = get_vapp_server()
             payload = json.dumps({
                 "external_id": monitoring_response['external_id'],
                 "ipv4_addr": monitoring_response["ipv4_addr"],
                 "latitude": lat,
-                "longitude": lon
+                "longitude": lon,
+                "subscription": "One time subscription"
             })
 
             headers = {
@@ -224,11 +249,12 @@ class CreateMonitoringSubscriptionView(APIView):
             }
 
             # Uncomment when testing with VApp
-            response = requests.request('POST', vapp_host, headers=headers, data=payload)
-            message = json.loads(response.text)
-            status_code = response.status_code
-            # message = monitoring_response
-            # status_code = status.HTTP_201_CREATED
+            # response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            # message = json.loads(response.text)
+            # status_code = response.status_code
+            message = monitoring_response
+            status_code = status.HTTP_201_CREATED
+
 
         else:
             message = monitoring_response
@@ -262,7 +288,7 @@ class CellsUpdateView(APIView):
         return Response(parsed, status=status.HTTP_201_CREATED)
 
 
-# User View Set
+### User View Set ###
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -316,32 +342,6 @@ class UserLogIn(ObtainAuthToken):
             'username': user.username
         })
 
-
-class UserRegister(generics.GenericAPIView):
-    serializer_class = RegisterSerializer
-    def post(self, request, *args, **kwargs):
-        data = request.data
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        print(request.data)
-        user = serializer.save()
-        # user = User.objects.create(
-        #         username=data['username'],
-        #         email=data['email'],
-        #         first_name=data['first_name'],
-        #         last_name=data['last_name'],
-        #         password=data['password'],
-        #         password_confirm=data['password_confirm']
-        #     )
-        # user.set_password(data['password'])
-        user.save()
-        return Response({
-            'user': user,
-        })
-        # return super().post(request, *args, **kwargs)
-#username=data['username'], email=data['email'], password=data['password'], first_name=data['first_name'], last_name=['last_name']
-
-
 class RegisterAPI(generics.GenericAPIView):
     serializer_class = RegisterSerializer
 
@@ -351,7 +351,6 @@ class RegisterAPI(generics.GenericAPIView):
         user = serializer.save()
         return Response({
         "user": UserSerializer(user, context=self.get_serializer_context()).data,
-        # "token": Token.objects.create(user)[1]
         })
 
 
@@ -361,9 +360,6 @@ class RegistrationAPIView(APIView):
     renderer_classes = (UserJSONRenderer,)
 
     def post(self, request):
-        # The create serializer, validate serializer, save serializer pattern
-        # below is common and you will see it a lot throughout this course and
-        # your own work later on. Get familiar with it.
         serializer = RegistrationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -377,6 +373,5 @@ class LoginAPIView(APIView):
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
-        # print(authenticate(request=request, username=request.data["email"], password=request.data["password"]))
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

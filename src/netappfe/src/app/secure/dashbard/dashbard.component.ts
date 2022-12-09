@@ -32,13 +32,6 @@ export class DashbardComponent implements OnInit {
           }
         )
       });
-
-    // this.dashboardService.get_monitoring_callbacks().subscribe(
-    //   (res: any) => {
-    //     this.callbacks = res;
-    //     console.log(res)
-    //   }
-    // )
   }
 
 }

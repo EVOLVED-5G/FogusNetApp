@@ -37,13 +37,11 @@ export class LoginComponent implements OnInit {
     } else {
         this.authService.login(data).subscribe({
           next: (data: any) => {
-            console.log(data);
             if (localStorage.getItem('data') !== JSON.stringify(data)) {
               localStorage.setItem('data', JSON.stringify(data));
             }
             this.isLoginFailed = false;
             this.isLoggedIn = true;
-            // this.authService.user();
             this.router.navigate(['/dashboard']);
           },
           error: (error: any) => {

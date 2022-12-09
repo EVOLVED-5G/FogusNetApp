@@ -45,15 +45,6 @@
       "radius": 20
     },
     {
-      "cell_id": "AAAAA1005",
-      "name": "cell5",
-      "description": "Building 5",
-      "gNB_id": 1,
-      "latitude": 37.97012,
-      "longitude": 23.75848,
-      "radius": 20
-    },
-    {
       "cell_id": "AAAAA1006",
       "name": "cell6",
       "description": "Building 6",
