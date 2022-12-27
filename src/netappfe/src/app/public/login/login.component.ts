@@ -22,7 +22,6 @@ export class LoginComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,private authService: AuthService,
     private router: Router) { }
 
-
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       email: ['',Validators.required],

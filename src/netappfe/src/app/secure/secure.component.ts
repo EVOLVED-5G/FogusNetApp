@@ -20,5 +20,4 @@ export class SecureComponent implements OnInit {
       }
     )
   }
-
 }

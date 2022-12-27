@@ -14,7 +14,6 @@ const routes: Routes = [
     component: SecureComponent,
     canActivate:[AuthGuard],
     children: [
-      // {path: '', redirectTo: '/sign-in', pathMatch: 'full'},
       {path: 'dashboard', component: DashbardComponent,canActivateChild:[AuthGuard]},
       {path: 'monitorsubscribe', component: MonitorSubscriptionComponent,canActivateChild:[AuthGuard]}
     ]

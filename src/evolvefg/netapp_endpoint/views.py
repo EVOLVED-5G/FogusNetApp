@@ -64,6 +64,7 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
         monitor_expire_time=expire_time
     )
     monitoring_response = subscription.to_dict()
+    print(monitoring_response)
     return monitoring_response
 
 ### For UE reachability and  loss of connectivity ###

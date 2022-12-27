@@ -62,6 +62,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+        # return User.objects.create_user(**validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
@@ -109,12 +110,9 @@ class RegistrationSerializer(serializers.ModelSerializer):
     token = serializers.CharField(max_length=255, read_only=True)
     class Meta:
         model = User
-        # List all of the fields that could possibly be included in a request
-        # or response, including fields specified explicitly above.
         fields = ['first_name', 'last_name','email', 'username','password', 'token']
 
     def create(self, validated_data):
-        # Use the `create_user` method we wrote earlier to create a new user.
         return User.objects.create_user(**validated_data)
 
 class LoginSerializer(serializers.Serializer):
@@ -126,7 +124,6 @@ class LoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get('email', None)
         password = data.get('password', None)
-
         if not email:
             raise serializers.ValidationError(
                 'An email address is required to log in.'

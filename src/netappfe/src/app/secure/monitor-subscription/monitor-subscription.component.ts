@@ -17,6 +17,10 @@ export class MonitorSubscriptionComponent implements OnInit {
   selectedUE: any;
   dataJson: any;
   isTime: Boolean;
+  isLocationReporting: Boolean;
+  isUEReachability: Boolean;
+  isLossOfConnectivity: Boolean;
+  data_response: any;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -30,31 +34,28 @@ export class MonitorSubscriptionComponent implements OnInit {
       MonitoringType_selected: [null]
     });
     this.isCorrect = false
+    this.isUEReachability = false;
+    this.isLossOfConnectivity = false;
+    this.isLocationReporting = false;
     this.UEs = UEdata.UEs
   }
 
   onSelected(value:string): void {
 		this.selectedUE = value;
 	}
-  
-  // clickMethod(name: string) {
-  //   if(confirm("Results "+name)) {
-  //     console.log("Implement delete functionality here");
-  //   }
-  // }
 
   submit() {
     const data = this.form.getRawValue()
-    if (data.callback_times == 1){
-      this.isTime = true
-    }
-    else{
-      this.isTime = false
-    }
+    if (data.callback_times == 1) {this.isTime = true}
+    else {this.isTime = false}
+    if (data.MonitoringType_selected == "LOCATION_REPORTING") { this.isLocationReporting = true}
+    if (data.MonitoringType_selected == "UE_REACHABILITY") { this.isUEReachability = true}
+    if (data.MonitoringType_selected == "LOSS_OF_CONNECTIVITY") { this.isLossOfConnectivity = true}
+    console.log("bla")
     this.monitoringSubService.create_monitoring_subscription(data.callback_times+'+'+data.UE_selected+'+'+data.MonitoringType_selected).subscribe(
       (res) => {
         console.log(res)
-        if(data.callback_times ==1){ confirm(JSON.stringify(res))}
+        this.data_response = JSON.stringify(res)
         this.isCorrect = true
       },
       (error) => {
@@ -63,4 +64,5 @@ export class MonitorSubscriptionComponent implements OnInit {
       }
     )
   }
+
 }

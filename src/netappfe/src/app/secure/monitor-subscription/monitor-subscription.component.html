@@ -23,10 +23,14 @@
             <option value="LOSS_OF_CONNECTIVITY">Loss of connectivity</option>
         </select>
     </div>
+    <div class="error_message">
+        <p class="alert alert-danger" *ngIf="isTime && isUEReachability"> Number of Monitoring callbacks must be greater than 1! </p>
+        <p class="alert alert-danger" *ngIf="isLossOfConnectivity && isTime"> Number of Monitoring callbacks must be greater than 1! </p>
+    </div>
     <div class="d-flex justify-content-center .align-content-md-stretch .align-self-center">
         <button class="btn btn-primary btn-lg" [disabled]="form.invalid" type="submit">Subscribe</button>
     </div>
-    <!-- <div *ngIf="isTime">
-        <button type=button class="btn btn-primary"  (click)="clickMethod('name')">Result</button>
-    </div> -->
+    <div class="one_time_message">
+        <p class="alert alert-success" *ngIf="isTime && isLocationReporting">{{data_response}} </p>
+    </div>
 </form>
