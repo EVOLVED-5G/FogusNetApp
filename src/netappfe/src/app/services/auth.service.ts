@@ -28,8 +28,8 @@ export class AuthService {
     return this.http.post('http://' + environment.backend + '/api-auth/logout/' + 'signout', { }, httpOptions);
   }
 
-  user(){
-    return this.http.get('http://' + environment.api + '/user', {withCredentials: true});
-  }
+  // user(){
+  //   return this.http.get('http://' + environment.api + '/dashboard', {withCredentials: true});
+  // }
 
 }

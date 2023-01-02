@@ -62,42 +62,12 @@ class RegisterSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
-        # return User.objects.create_user(**validated_data)
 
 class UserSerializer(serializers.ModelSerializer):
   class Meta:
     model = User
     fields = ["first_name", "last_name", "username", "email"]
     read_only_fields = ('username', )
-
-# class LoginSerializer(serializers.Serializer):
-#     username = serializers.CharField(
-#         label="username",
-#         write_only=True
-#     )
-    
-#     password = serializers.CharField(
-#         label="password",
-#         trim_whitespace=False,
-#         write_only=True
-#     )
-
-#     def validate(self, attrs):
-#         username = attrs.get('username')
-#         password = attrs.get('password')
-#         if username and password:
-#             user = authenticate( request=self.context.get('request'),
-#                 username = username ,
-#                 password=password)
-#             if not user:
-#                 # If we don't have a regular user, raise a ValidationError
-#                 msg = 'Access denied: wrong username or password.'
-#                 raise serializers.ValidationError(msg, code='authorization')
-#         else:
-#             msg = 'Both "username" and "password" are required.'
-#             raise serializers.ValidationError(msg, code='authorization')
-#         attrs['user'] = user
-#         return attrs
 
 class RegistrationSerializer(serializers.ModelSerializer):
     """Serializers registration requests and creates a new user."""
@@ -108,10 +78,16 @@ class RegistrationSerializer(serializers.ModelSerializer):
     )
 
     token = serializers.CharField(max_length=255, read_only=True)
+    password_confirm = serializers.CharField(write_only=True, min_length=8, required=True)
     class Meta:
         model = User
-        fields = ['first_name', 'last_name','email', 'username','password', 'token']
+        fields = ['first_name', 'last_name','email', 'username','password',"password_confirm", 'token']
 
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError({"password": "Password fields didn't match."})
+        return attrs
+    
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 

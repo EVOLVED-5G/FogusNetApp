@@ -4,28 +4,24 @@
       <form class="form-signin" [formGroup]="form" (submit)="submit()">
         <img class="mb-4" src="../../../assets/logo.png" alt="" width="72" height="57">
         <h1 class="h3 mb-3 fw-normal">Sign Up</h1>
-    
         <div class="form-floating">
           <input type="text" class="form-control" formControlName="first_name"  id="firstName" placeholder="First Name" required autofocus>
           <label for="firstName">First Name</label>
           <div *ngIf="form.controls['first_name'].errors && (form.controls['first_name'].dirty || form.controls['first_name'].touched)">
             <p *ngIf="form.controls['first_name'].errors?.['required']" style="color:red">First name is required</p> </div>
         </div>
-
         <div class="form-floating">
           <input type="text" class="form-control" formControlName="last_name" id="lastName" placeholder="Last Name" required autofocus>
           <label for="lastName">Last Name</label>
           <div *ngIf="form.controls['last_name'].errors && (form.controls['last_name'].dirty || form.controls['last_name'].touched)">
             <p *ngIf="form.controls['last_name'].errors?.['required']" style="color:red">Last name is required</p> </div>
         </div>
-        
         <div class="form-floating">
           <input type="text" class="form-control" formControlName="username"  id="userName" placeholder="Userame" required autofocus>
           <label for="userName">Username</label>
           <div *ngIf="form.controls['username'].errors && (form.controls['username'].dirty || form.controls['username'].touched)">
             <p *ngIf="form.controls['username'].errors?.['required']" style="color:red">Username is required</p>  </div>
         </div>
-
         <div class="form-floating">
           <input type="email" class="form-control" formControlName="email" id="inputEmail" placeholder="Email address" required autofocus>
           <label for="inputEmail">Email address</label>
@@ -33,35 +29,34 @@
             <p *ngIf="form.controls['email'].errors?.['required']" style="color:red">Email is required</p> 
             <p *ngIf="form.controls['email'].errors?.['pattern']" style="color:red">Please provide a valid email address </p>  </div>
         </div>
-
         <div class="form-floating">
           <input type="password" class="form-control" formControlName="password" id="inputPassword" placeholder="Password" minlength="8" required>
           <label for="inputPassword">Password</label>
           <div *ngIf="form.controls['password'].errors && (form.controls['password'].dirty || form.controls['password'].touched)">
-            <p *ngIf="form.controls['password'].errors?.['required']" style="color:red">Password is required and must have at least 8 characters</p> </div>
-            <p *ngIf="form.controls['password'].errors?.['minlength']" style="color:red">Must be at least 8 characters</p>
-          </div>
-
+            <p *ngIf="form.controls['password'].errors?.['required']" style="color:red">Password is required/p> </div>
+            <p *ngIf="form.controls['password'].errors?.['minlength']" style="color:red"> Password must have at least 8 characters</p>
+        </div>
         <div class="form-floating">
-          <input type="password" class="form-control" formControlName="password_confirm" id="PassswordConfirm" placeholder="Passsword Confirm" pattern=".{8,40}" required>
+          <input type="password" class="form-control" formControlName="password_confirm" id="PassswordConfirm" placeholder="Passsword Confirm" minlength="8" required>
           <label for="PassswordConfirm">Passsword Confirm</label>
           <div *ngIf="form.controls['password_confirm'].errors && (form.controls['password_confirm'].dirty || form.controls['password_confirm'].touched)">
-            <p *ngIf="form.controls['password_confirm'].errors?.['required']" style="color:red">Password confirm is required</p> </div>
-            <div *ngIf="form.controls['password'].errors?.['minlength']" style="color:red">Must be at least 8 characters</div>
+            <p *ngIf="form.controls['password_confirm'].errors?.['required']" style="color:red">Password is required</p> 
+            <p *ngIf="form.controls['password_confirm'].errors?.['minlength']" style="color:red"> Password must have at least 8 characters</p> </div>
             <p *ngIf="form.controls['password_confirm'].errors?.['matching']" style="color:red"> Confirm Password does not match </p>
         </div>
-
-        <button class="w-100 btn btn-lg btn-primary" [disabled]="form.invalid" type="submit">Sign up</button>
-
+        <button class="w-100 btn btn-lg btn-primary" [disabled]="!form.valid" type="submit">Sign up</button>
         <div class="signup_failed">
           <p class="alert alert-danger" *ngIf="isSignUpFailed"> Sign up failed </p>
         </div>
         <div class="error_message_username">
           <p class="alert alert-danger" *ngIf="isUsername"> This username already exists </p>
-      </div>
-      <div class="error_message_email">
-        <p class="alert alert-danger" *ngIf="isEmail"> This email already exists </p>
-    </div>
+        </div>
+        <div class="error_message_email">
+          <p class="alert alert-danger" *ngIf="isEmail"> This email already exists </p>
+        </div>
+        <div class="error_message_password">
+          <p class="alert alert-danger" *ngIf="isPasswordMatch"> Passwords don't match </p>
+        </div>
       </form>
       <div class="alert alert-success" *ngIf="isSuccessful">
         Your registration is successful! 

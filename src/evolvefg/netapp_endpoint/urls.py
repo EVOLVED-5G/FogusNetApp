@@ -17,10 +17,5 @@ urlpatterns = [
     path(r'api/v1/cells/update/', views.CellsUpdateView.as_view(), name='cellsupdate'),
     path('get-details/',UserDetailAPI.as_view()),
     path('login/', views.LoginAPIView.as_view()),
-    path('register/',views.RegistrationAPIView.as_view()),
-    # path('accounts/', include('django.contrib.auth.urls')),
-    # path('users/', views.RegistrationAPIView.as_view()),
-    # path('profile/', views.ProfileView.as_view()),
-    # path('users/', views.UserList.as_view()),
-    # path('users/<int:pk>/', views.UserDetail.as_view()),
+    path('register/',views.RegistrationAPIView.as_view())
 ]
