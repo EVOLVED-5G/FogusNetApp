@@ -35,6 +35,7 @@ from evolved5g.sdk import LocationSubscriber, QosAwareness, ConnectionMonitor
 from evolved5g.swagger_client import UsageThreshold, Configuration, ApiClient, LoginApi
 import re
 
+# id_post_vertical = 0 
 
 config = configparser.ConfigParser()
 config.read('db_template.properties')  # it has to be changed with "db_template.properties" when filled
@@ -118,6 +119,9 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
         return MonitoringCallback.objects.all()
 
     def create(self, request, *args, **kwargs):
+        headers = {
+            'Content-Type': 'application/json'
+        }
         monitoringType = request.data["monitoringType"]
         if monitoringType == "LOCATION_REPORTING":
             ipv4Addr = request.data["ipv4Addr"]
@@ -132,16 +136,17 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
                 "latitude": lat,
                 "longitude": lon
             })
+            # Uncomment when testing with VApp
+            vapp_host = get_vapp_server()
+            print("in create:", payload)
+            response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            status_code = response.status_code
+            print("status code:", status_code)
+            print(response)
         else:
             ipv4Addr = request.data["ipv4Addr"]
             externalId = request.data["externalId"]
         
-        headers = {
-            'Content-Type': 'application/json'
-        }
-        # Uncomment when testing with VApp
-        # vapp_host = get_vapp_server()
-        # requests.request('POST', vapp_host, headers=headers, data=payload)
         super().create(request,*args, **kwargs)
         return Response({"ack" : "TRUE"})
 
@@ -207,7 +212,7 @@ class CellViewSet(mixins.ListModelMixin,
 class CreateMonitoringSubscriptionView(APIView):
 
     def get(self, request, *args, **kwargs):
-        print(request)
+        # global id_post_vertical
         answer = self.kwargs.get('string')
         answer_dict = answer.split("+")
         times = answer_dict[0]
@@ -229,20 +234,20 @@ class CreateMonitoringSubscriptionView(APIView):
             monitoring_type = ConnectionMonitor.MonitoringType.INFORM_WHEN_NOT_CONNECTED 
             monitoring_response = connection_monitor_subscription(int(times),monitoring_type, host, token.access_token, os.environ['PATH_TO_CERTS'],
                                             os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
-
-        if times == 1:
+        if int(times) == 1:
             cellId = monitoring_response['location_info']['cell_id']
             cell = Cell.objects.get(cellId=cellId)
             lat = cell.latitude
             lon = cell.longitude
 
-            # vapp_host = get_vapp_server()
+            vapp_host = get_vapp_server()
             payload = json.dumps({
+                # "id": id_post_vertical,
                 "external_id": monitoring_response['external_id'],
                 "ipv4_addr": monitoring_response["ipv4_addr"],
                 "latitude": lat,
                 "longitude": lon,
-                "subscription": "One time subscription"
+                # "subscription": "One time subscription"
             })
 
             headers = {
@@ -250,13 +255,12 @@ class CreateMonitoringSubscriptionView(APIView):
             }
 
             # Uncomment when testing with VApp
-            # response = requests.request('POST', vapp_host, headers=headers, data=payload)
-            # message = json.loads(response.text)
-            # status_code = response.status_code
-            message = monitoring_response
-            status_code = status.HTTP_201_CREATED
-
-
+            response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            message = json.loads(response.text)
+            status_code = response.status_code
+            print("payload", payload)
+            # message = monitoring_response
+            # status_code = status.HTTP_201_CREATED
         else:
             message = monitoring_response
             status_code = status.HTTP_201_CREATED

@@ -51,7 +51,6 @@ export class MonitorSubscriptionComponent implements OnInit {
     if (data.MonitoringType_selected == "LOCATION_REPORTING") { this.isLocationReporting = true}
     if (data.MonitoringType_selected == "UE_REACHABILITY") { this.isUEReachability = true}
     if (data.MonitoringType_selected == "LOSS_OF_CONNECTIVITY") { this.isLossOfConnectivity = true}
-    console.log("bla")
     this.monitoringSubService.create_monitoring_subscription(data.callback_times+'+'+data.UE_selected+'+'+data.MonitoringType_selected).subscribe(
       (res) => {
         console.log(res)
@@ -59,7 +58,6 @@ export class MonitorSubscriptionComponent implements OnInit {
         this.isCorrect = true
       },
       (error) => {
-        console.log(error)
         this.isCorrect = false
       }
     )

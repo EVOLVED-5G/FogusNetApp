@@ -44,7 +44,6 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/dashboard']);
           },
           error: (error: any) => {
-            console.log(error);
             this.isLoginFailed = true;
             setTimeout(() => {
               this.reloadPage();

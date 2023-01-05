@@ -56,7 +56,6 @@ export class RegisterComponent implements OnInit {
       }, 4000);
       },
       error: (err:any) => {
-        console.log(err)
         if ( err.error.user.username == "user with this username already exists.") {this.isUsername = true}
         if (err.error.user.email == "user with this email already exists.") {this.isEmail = true}
         if (err.error.user.password == "Password fields didn't match.") {this.isPasswordMatch = true}
