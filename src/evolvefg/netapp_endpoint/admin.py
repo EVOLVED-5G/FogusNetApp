@@ -11,21 +11,12 @@ from django.contrib.auth.forms import ReadOnlyPasswordHashField
 class MonitoringCallbackAdmin (admin.ModelAdmin):
     list_display = ['id', 'externalId', 'monitoringType', 'ipv4Addr']
 
-
 @admin.register(AnalyticsEventNotification)
 class AnalyticsEventNotificationAdmin (admin.ModelAdmin):
     list_display = ['id', 'notifId']
-
 
 @admin.register(Cell)
 class CellAdmin (admin.ModelAdmin):
     list_display = ['id', 'cellId', 'latitude', 'longitude']
 
-
-
 admin.site.register(User)
-
-
-# @admin.register(User)
-# class UserAdmin (admin.ModelAdmin):
-#     list_display = ['first_name','last_name', 'username', 'email']

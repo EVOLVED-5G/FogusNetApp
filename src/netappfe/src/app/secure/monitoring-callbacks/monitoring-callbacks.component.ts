@@ -6,10 +6,6 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./monitoring-callbacks.component.scss']
 })
 export class MonitoringCallbacksComponent implements OnInit {
-
   constructor() { }
-
-  ngOnInit(): void {
-  }
-
+  ngOnInit(): void { }
 }

@@ -21,21 +21,23 @@ export class RegisterComponent implements OnInit {
 
   submitted: boolean = false;
   isSuccessful: boolean = false;
-  isSignUpFailed: boolean= false;
+  isSignUpFailed: boolean = false;
+  isUsername: boolean = false;
+  isEmail: boolean = false;
+  isPasswordMatch: boolean = false;
   errorMessage = '';
-  dataJson: any;
 
   constructor(private formBulder: FormBuilder, private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
     this.form = this.formBulder.group(
       {
-        first_name: ['',Validators.required],
-        last_name: ['',Validators.required],
-        username: ['',Validators.required],
+        first_name: ['',[Validators.required]],
+        last_name: ['',[Validators.required]],
+        username: ['',[Validators.required]],
         email: ['',[Validators.required, Validators.email,Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]],
-        password: ['',Validators.required, Validators.minLength(6), Validators.maxLength(40)],
-        password_confirm: ['',Validators.required]
+        password: ['',[Validators.required, Validators.minLength(8), Validators.maxLength(40)]],
+        password_confirm: ['',[Validators.required]]
       },
       {
         validators: [Validation.match('password', 'password_confirm')]
@@ -45,8 +47,6 @@ export class RegisterComponent implements OnInit {
   submit(){
     const data = this.form.getRawValue();
     this.submitted = true;
-    console.log(data);
-    // this.dataJson = JSON.stringify(data);
     this.authService.register(data).subscribe({
       next: (res: any) =>{
       this.isSuccessful = true;
@@ -55,11 +55,20 @@ export class RegisterComponent implements OnInit {
         this.router.navigate(['/sign-in']);
       }, 4000);
       },
-      error: (err: { error: { message: string; }; }) => {
+      error: (err:any) => {
+        if ( err.error.user.username == "user with this username already exists.") {this.isUsername = true}
+        if (err.error.user.email == "user with this email already exists.") {this.isEmail = true}
+        if (err.error.user.password == "Password fields didn't match.") {this.isPasswordMatch = true}
         this.errorMessage = err.error.message;
         this.isSignUpFailed = true;
+        setTimeout(() => {
+          this.reloadPage();
+        }, 3000);
       }
       });
   }
 
+  reloadPage(): void {
+    window.location.reload();
+  }
 }

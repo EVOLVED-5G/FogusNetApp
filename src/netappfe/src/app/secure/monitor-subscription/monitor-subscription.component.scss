@@ -4,7 +4,6 @@
 }
 
 .callback-row{
-    // margin: 10px auto;
     margin: 0 auto;
     width:fit-content;
     display: flex;
@@ -18,7 +17,7 @@
     text-align: center;
 }
 
-.selection, select{
+.selectionUE, .selectionMonitoringType, select{
     border-radius: 8px;
     display: flex;
     margin: 10px auto;
@@ -26,3 +25,33 @@
     text-align: center;
     justify-content: center;
 }
+
+.one_time_message,.error_message, .one_time_null_message{
+    margin-top: 25px;
+    border-radius: 8px;
+    text-align: center;
+    justify-content: center;
+}
+
+/* The close button */
+.closebtn {
+    margin-left: 15px;
+    color: white;
+    font-weight: bold;
+    float: right;
+    font-size: 22px;
+    line-height: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  /* When moving the mouse over the close button */
+  .closebtn:hover {
+    color: black;
+  }
+  
+  .table-striped {
+    margin-top: 25px;
+    text-align: center;
+    justify-content: center;
+  }

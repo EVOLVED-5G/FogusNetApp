@@ -11,14 +11,13 @@ export class SecureComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.authService.user().subscribe(
-      res=>{
-        console.log(res)
-      },
-      err=>{
-        console.log(err)
-      }
-    )
+    // this.authService.user().subscribe(
+    //   res=>{
+    //     console.log(res)
+    //   },
+    //   err=>{
+    //     console.log(err)
+    //   }
+    // )
   }
-
 }
