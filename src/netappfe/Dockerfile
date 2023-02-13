@@ -23,4 +23,5 @@ COPY . /usr/src/app
 
 # start app
 CMD ["/bin/sh",  "-c",  "envsubst < src/assets/env.template.js > src/assets/env.js && exec ng serve --host 0.0.0.0 --disable-host-check;"]
+# TLS --ssl true --ssl-key localhost-key.pem --ssl-cert localhost.pem && in package.json =>  --ssl true --ssl-key localhost-key.pem --ssl-cert localhost.pem"
 # CMD ng serve --host 0.0.0.0 --disable-host-check

@@ -27,9 +27,4 @@ export class AuthService {
   logout(): Observable<any> {
     return this.http.post('http://' + environment.backend + '/api-auth/logout/' + 'signout', { }, httpOptions);
   }
-
-  // user(){
-  //   return this.http.get('http://' + environment.api + '/dashboard', {withCredentials: true});
-  // }
-
 }

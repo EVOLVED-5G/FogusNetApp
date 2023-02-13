@@ -78,10 +78,6 @@ WSGI_APPLICATION = 'evolvefg.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
     'default': {
             'ENGINE': 'django.db.backends.postgresql',
             'NAME': 'evolvedb',
@@ -99,7 +95,6 @@ REST_FRAMEWORK = {
         'netapp_endpoint.backends.JWTAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
         'rest_framework.permissions.AllowAny'
     ]
 }
@@ -126,7 +121,6 @@ AUTH_PASSWORD_VALIDATORS = [
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
-AUTH_USER_MODEL = 'netapp_endpoint.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

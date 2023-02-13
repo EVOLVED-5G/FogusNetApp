@@ -12,3 +12,5 @@ src/netappfe/src/assets/env.js
 .env
 src/evolvefg/capif_onboarding/*
 !src/evolvefg/capif_onboarding/.gitkeep
+*.pem
+src/evolvefg/netapp.json

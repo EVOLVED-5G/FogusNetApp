@@ -1,10 +1,8 @@
 <body class="text-center">
-    
   <main class="form-signin">
     <form [formGroup]="form" novalidate (submit)="submit()">
       <img class="mb-4" src="../../../assets/logo.png" alt="" width="72" height="57">
       <h1 class="h3 mb-3 fw-normal">Sign in</h1>
-  
       <div class="form-floating">
         <input type="text" formControlName="email" class="form-control" id="email" placeholder="Email" required autofocus>
         <label for="Email" >Email</label>

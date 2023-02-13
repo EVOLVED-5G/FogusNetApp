@@ -31,6 +31,30 @@
         <button class="btn btn-primary btn-lg" [disabled]="form.invalid" type="submit">Subscribe</button>
     </div>
     <div class="one_time_message">
-        <p class="alert alert-success" *ngIf="isTime && isLocationReporting">{{data_response}} </p>
+        <div class="table-striped">
+            <table class="table table-striped" *ngIf="isTime && isLocationReporting && !isNullCheck">
+                <thead>
+                    <tr>
+                        <th>External Id</th>
+                        <th>Cell Id</th>
+                        <th>Monitoring Type</th>
+                        <th>IPv4</th>
+                        <th>gNBId</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td> {{ external_id }} </td>
+                        <td>{{ cell_id }}</td>
+                        <td>{{ monitoring_type }}</td>
+                        <td>{{ ipv4Addr }}</td>
+                        <td>{{ gNBId }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="one_time_null_message">
+        <p class="alert alert-danger" *ngIf="isNullCheck"> The UE is out of any cell's range!</p>
     </div>
 </form>

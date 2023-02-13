@@ -1,12 +1,8 @@
 from django.db import models
-# from django.contrib.auth.models import User
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import UserManager
 from django.conf import settings
-from django.dispatch import receiver
-from django.db.models.signals import post_save
-from rest_framework.authtoken.models import Token
 import jwt
-
+import os
 from datetime import datetime, timedelta
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin
@@ -31,6 +27,8 @@ ANALYTICS_EVENT = (
 def get_default_locationinfo():
     return {"cellId": "AAAAA1002", "enodeBId": "AAAAA1"}
 
+def get_default_VerticalApp_address():
+    return os.environ['VAPP_ADDRESS']
 
 def get_analyEventNotifs():
     return [
@@ -65,31 +63,29 @@ def get_analyEventNotifs():
 
 
 class MonitoringCallback (models.Model):
-    externalId = models.CharField(max_length=30, null=True, blank=True)
-    locationInfo = models.JSONField(
-        default=get_default_locationinfo(),
-        null=True,
-        blank=True
-    )
-    monitoringType = models.CharField(max_length=25, choices=MONITORING_TYPE)
-    subscription = models.CharField(max_length=200)
-    ipv4Addr = models.CharField(max_length=15, null=True, blank=True)
+  externalId = models.CharField(max_length=30, null=True, blank=True)
+  locationInfo = models.JSONField(
+      default=get_default_locationinfo(),
+      null=True,
+      blank=True
+  )
+  monitoringType = models.CharField(max_length=25, choices=MONITORING_TYPE)
+  subscription = models.CharField(max_length=200)
+  ipv4Addr = models.CharField(max_length=15, null=True, blank=True)
 
 
 class AnalyticsEventNotification (models.Model):
-    notifId = models.CharField(max_length=100)
-    analyEventNotifs = models.JSONField(
-        default=get_analyEventNotifs(),
-    )
-
+  notifId = models.CharField(max_length=100)
+  analyEventNotifs = models.JSONField(
+      default=get_analyEventNotifs(),
+  )
 
 class Cell (models.Model):
-    cellId = models.CharField(max_length=50)
-    latitude = models.FloatField()
-    longitude = models.FloatField()
+  cellId = models.CharField(max_length=50)
+  latitude = models.FloatField()
+  longitude = models.FloatField()
 
 class UserManager(BaseUserManager):
-  # pass
   def create_user(self, first_name, last_name, email, username, password=None, password_confirm=None):
     if username is None:
       raise TypeError('Users must have a username.')
@@ -98,7 +94,6 @@ class UserManager(BaseUserManager):
       raise TypeError('Users must have an email address.')
     
     user = self.model(username=username, email=self.normalize_email(email), first_name=first_name, last_name=last_name)
-    # user = self.models(username=username, email=self.normalize_email(email), password=password, **other)
     user.set_password(password)
     user.save()
 
@@ -113,8 +108,6 @@ class UserManager(BaseUserManager):
     user.save()
     return user
     
-
-
 class User(AbstractBaseUser, PermissionsMixin):
   first_name = models.CharField(max_length=50)
   last_name = models.CharField(max_length=50)

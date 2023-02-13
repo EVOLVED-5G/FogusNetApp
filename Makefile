@@ -10,7 +10,7 @@ restart: stop-dev run-dev
 fresh: clean-dev run-dev
 
 stop-dev:
-	$(DOCKER_COMPOSE) down --rmi all --remove-orphans || true
+	$(DOCKER_COMPOSE) down --rmi local --remove-orphans || true
 
 clean-dev: stop-dev
 	@ echo "May need to give password to remove database and migrations"
@@ -23,7 +23,7 @@ build-dev: clean-dev
 
 run-dev:
 	@ cp env_to_copy.dev .env
-	@ $(DOCKER_COMPOSE) up -d --remove-orphans --build
+	@ $(DOCKER_COMPOSE) up -d --build
 	@ sleep 10 && echo "Sleeping for 10s...."
 
 guard-%:
