@@ -24,7 +24,6 @@ build-dev: clean-dev
 run-dev:
 	@ cp env_to_copy.dev .env
 	@ $(DOCKER_COMPOSE) up -d --build
-	@ sleep 10 && echo "Sleeping for 10s...."
 
 guard-%:
         @ [ "${${*}}" = "" ] && echo "No $* detected" && exit 1 || :
