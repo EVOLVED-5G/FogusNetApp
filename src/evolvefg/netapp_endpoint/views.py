@@ -66,11 +66,11 @@ def get_host_of_the_callback_server() -> str:
 
 def get_vapp_server() -> str:
     vapp_address = os.environ['VAPP_ADDRESS']
-    return "http://{}/ossimserver/asset/".format(vapp_address)
+    return "https://{}/ossimserver/asset/".format(vapp_address)
 
 def get_vapp_server_auth() -> str:
     vapp_address = os.environ['VAPP_ADDRESS']
-    return "http://{}/ossimserver/auth-netapp/".format(vapp_address)
+    return "https://{}/ossimserver/auth-netapp/".format(vapp_address)
 
 ### For location reporting ###
 def monitor_subscription(times, host, access_token, certificate_folder, capifhost, capifport, callback_server):
@@ -187,7 +187,7 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
             # Uncomment when testing with VApp
             vapp_host = get_vapp_server()
             # Add parameters for TLS
-            response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            response = requests.request('POST', vapp_host, headers=headers, data=payload, verify=False)
             status_code = response.status_code
         else:
             ipv4Addr = request.data["ipv4Addr"]
@@ -267,7 +267,7 @@ class CreateMonitoringSubscriptionView(APIView):
         headers = {
             'Content-Type': 'application/json',
         }
-        response = requests.request('POST', vapp_host, headers=headers, data=payload)
+        response = requests.request('POST', vapp_host, headers=headers, data=payload, verify=False)
         message = json.loads(response.text)
         print(message)
         if  "network app with this netapp address already exists." in message['Network App information']['netapp_address'] :
@@ -352,7 +352,7 @@ class CreateMonitoringSubscriptionView(APIView):
                     'Authorization': 'Token'+token_netapp,
                 }
             # Uncomment when testing with VApp
-            response = requests.request('POST', vapp_host, headers=headers, data=payload)
+            response = requests.request('POST', vapp_host, headers=headers, data=payload, verify= False)
             message = json.loads(response.text)
             print(response)
             status_code = response.status_code
