@@ -50,6 +50,7 @@ config.read('db_template.properties')  # it has to be changed with "db_template.
 def request_nef_token(nef_host, username, password):
     configuration = Configuration()
     configuration.host = nef_host
+    configuration.verify_ssl = False
     api_client = ApiClient(configuration=configuration)
     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
     api = LoginApi(api_client)
@@ -58,7 +59,7 @@ def request_nef_token(nef_host, username, password):
 
 def get_host_of_the_nef_emulator() -> str:
     nef_address = os.environ['NEF_ADDRESS']
-    return "http://{}".format(nef_address)
+    return "https://{}".format(nef_address)
 
 def get_host_of_the_callback_server() -> str:
     callback_address = os.environ['CALLBACK_ADDRESS']
@@ -300,6 +301,7 @@ class CreateMonitoringSubscriptionView(APIView):
         nef_user = os.environ['NEF_USER']
         nef_pass = os.environ['NEF_PASSWORD']
         token = request_nef_token(host, nef_user, nef_pass)
+        print("NEF TOKEN", token)
         callback_host = get_host_of_the_callback_server() + "/netappserver/api/v1/monitoring/callback/"
         if MonitoringType_selected == "LOCATION_REPORTING":
             monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
