@@ -33,7 +33,6 @@ import datetime
 import configparser
 import os.path
 from .renderers import UserJSONRenderer
-# from  .config import *
 
 # # Global variables for authentication with Vertical App
 global IsAuthenticated_netapp
@@ -50,10 +49,12 @@ config.read('db_template.properties')  # it has to be changed with "db_template.
 def request_nef_token(nef_host, username, password):
     configuration = Configuration()
     configuration.host = nef_host
+    configuration.verify_ssl = False
     api_client = ApiClient(configuration=configuration)
     api_client.select_header_content_type(["application/x-www-form-urlencoded"])
     api = LoginApi(api_client)
     token = api.login_access_token_api_v1_login_access_token_post("", username, password, "", "", "")
+
     return token
 
 def get_host_of_the_nef_emulator() -> str:
@@ -87,6 +88,7 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
         monitor_expire_time=expire_time
     )
     monitoring_response = subscription.to_dict()
+
     return monitoring_response
 
 ### For UE reachability ###
