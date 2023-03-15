@@ -1,0 +1,22 @@
+apiVersion: v1
+data:
+  CALLBACK_ADDRESS: 192.168.1.5:8000
+  CAPIF_HOSTNAME: capifcore
+  CAPIF_PORT_HTTP: "8080"
+  CAPIF_PORT_HTTPS: "443"
+  FRONTEND_ADDRESS: 192.168.1.5:4200
+  NEF_ADDRESS: 192.168.1.5:8888
+  NEF_PASSWORD: pass
+  NEF_USER: admin@my-email.com
+  NETAPP_ADDRESS: 192.168.1.5:8000
+  PATH_TO_CERTS: /code/capif_onboarding
+  POSTGRES_DB: evolvedb
+  POSTGRES_PASSWORD: evolvepass
+  POSTGRES_USER: evolveclient
+  VAPP_ADDRESS: 195.134.66.79:8443
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: dbnetapp-env
+  name: env

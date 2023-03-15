@@ -1,0 +1,44 @@
+dbnetapp:
+  netapppostgres:
+    image:
+      repository: postgres
+      tag: "10"
+  replicas: 1
+django:
+  netappdjango:
+    image:
+      repository: netappdjango
+      tag: latest
+  ports:
+  - name: "8000"
+    port: 8000
+    targetPort: 8000
+  replicas: 1
+  type: ClusterIP
+env:
+  callbackAddress: 192.168.1.5:8000
+  capifHostname: capifcore
+  capifPortHttp: "8080"
+  capifPortHttps: "443"
+  frontendAddress: 192.168.1.5:4200
+  nefAddress: 192.168.1.5:8888
+  nefPassword: pass
+  nefUser: admin@my-email.com
+  netappAddress: 192.168.1.5:8000
+  pathToCerts: /code/capif_onboarding
+  postgresDb: evolvedb
+  postgresPassword: evolvepass
+  postgresUser: evolveclient
+  vappAddress: 195.134.66.79:8443
+fe:
+  netappfe:
+    image:
+      repository: netappfe
+      tag: latest
+  ports:
+  - name: "4200"
+    port: 4200
+    targetPort: 4200
+  replicas: 1
+  type: ClusterIP
+kubernetesClusterDomain: cluster.local

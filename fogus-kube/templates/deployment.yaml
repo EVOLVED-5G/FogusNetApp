@@ -1,0 +1,327 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fogus-kube.fullname" . }}-dbnetapp
+  labels:
+    io.kompose.service: dbnetapp
+  {{- include "fogus-kube.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.28.0 (c4137012e)
+spec:
+  replicas: {{ .Values.dbnetapp.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: dbnetapp
+    {{- include "fogus-kube.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/fogusnetapp-default: "true"
+        io.kompose.service: dbnetapp
+      {{- include "fogus-kube.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.28.0 (c4137012e)
+    spec:
+      containers:
+      - env:
+        - name: CALLBACK_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: CALLBACK_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_HOSTNAME
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_PORT_HTTP
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTP
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_PORT_HTTPS
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTPS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: FRONTEND_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: FRONTEND_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_PASSWORD
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_USER
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_USER
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NETAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NETAPP_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: PATH_TO_CERTS
+          valueFrom:
+            configMapKeyRef:
+              key: PATH_TO_CERTS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_PASSWORD
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: VAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: VAPP_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.dbnetapp.netapppostgres.image.repository }}:{{ .Values.dbnetapp.netapppostgres.image.tag
+          | default .Chart.AppVersion }}
+        name: netapppostgres
+        resources: {}
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fogus-kube.fullname" . }}-django
+  labels:
+    io.kompose.service: netappdjango
+  {{- include "fogus-kube.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.28.0 (c4137012e)
+spec:
+  replicas: {{ .Values.django.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: netappdjango
+    {{- include "fogus-kube.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/fogusnetapp-default: "true"
+        io.kompose.service: netappdjango
+      {{- include "fogus-kube.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.28.0 (c4137012e)
+    spec:
+      containers:
+      - args:
+        - ./wait_db.sh
+        - dbnetapp:5432
+        - --
+        - sh
+        - docker_start_up.sh
+        env:
+        - name: CALLBACK_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: CALLBACK_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_HOSTNAME
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_PORT_HTTP
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTP
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_PORT_HTTPS
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTPS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: FRONTEND_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: FRONTEND_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_PASSWORD
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_USER
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_USER
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NETAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NETAPP_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: PATH_TO_CERTS
+          valueFrom:
+            configMapKeyRef:
+              key: PATH_TO_CERTS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_PASSWORD
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: VAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: VAPP_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.django.netappdjango.image.repository }}:{{ .Values.django.netappdjango.image.tag
+          | default .Chart.AppVersion }}
+        name: netappdjango
+        ports:
+        - containerPort: 8000
+        resources: {}
+      restartPolicy: Always
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "fogus-kube.fullname" . }}-fe
+  labels:
+    io.kompose.service: netappfe
+  {{- include "fogus-kube.labels" . | nindent 4 }}
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.28.0 (c4137012e)
+spec:
+  replicas: {{ .Values.fe.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: netappfe
+    {{- include "fogus-kube.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.network/fogusnetapp-default: "true"
+        io.kompose.service: netappfe
+      {{- include "fogus-kube.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.28.0 (c4137012e)
+    spec:
+      containers:
+      - env:
+        - name: CALLBACK_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: CALLBACK_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_HOSTNAME
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_PORT_HTTP
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTP
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: CAPIF_PORT_HTTPS
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTPS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: FRONTEND_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: FRONTEND_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_PASSWORD
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NEF_USER
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_USER
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: NETAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NETAPP_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: PATH_TO_CERTS
+          valueFrom:
+            configMapKeyRef:
+              key: PATH_TO_CERTS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_PASSWORD
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: VAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: VAPP_ADDRESS
+              name: {{ include "fogus-kube.fullname" . }}-env
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.fe.netappfe.image.repository }}:{{ .Values.fe.netappfe.image.tag
+          | default .Chart.AppVersion }}
+        name: netappfe
+        ports:
+        - containerPort: 4200
+        resources: {}
+      restartPolicy: Always

@@ -1,0 +1,155 @@
+apiVersion: v1
+kind: DeploymentConfig
+metadata:
+  name: {{ include "fogus-openshift.fullname" . }}-fe
+  labels:
+    io.kompose.service: netappfe
+  {{- include "fogus-openshift.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    io.kompose.service: netappfe
+  strategy:
+    resources: {}
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        io.kompose.network/fogusnetapp-default: "true"
+        io.kompose.service: netappfe
+    spec:
+      containers:
+      - env:
+        - name: CALLBACK_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: CALLBACK_ADDRESS
+              name: env
+        - name: CAPIF_HOSTNAME
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_HOSTNAME
+              name: env
+        - name: CAPIF_PORT_HTTP
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTP
+              name: env
+        - name: CAPIF_PORT_HTTPS
+          valueFrom:
+            configMapKeyRef:
+              key: CAPIF_PORT_HTTPS
+              name: env
+        - name: FRONTEND_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: FRONTEND_ADDRESS
+              name: env
+        - name: NEF_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_ADDRESS
+              name: env
+        - name: NEF_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_PASSWORD
+              name: env
+        - name: NEF_USER
+          valueFrom:
+            configMapKeyRef:
+              key: NEF_USER
+              name: env
+        - name: NETAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: NETAPP_ADDRESS
+              name: env
+        - name: PATH_TO_CERTS
+          valueFrom:
+            configMapKeyRef:
+              key: PATH_TO_CERTS
+              name: env
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_DB
+              name: env
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_PASSWORD
+              name: env
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              key: POSTGRES_USER
+              name: env
+        - name: VAPP_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              key: VAPP_ADDRESS
+              name: env
+        image: ' '
+        name: netappfe
+        ports:
+        - containerPort: 4200
+        resources: {}
+      restartPolicy: Always
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - netappfe
+      from:
+        kind: ImageStreamTag
+        name: netappfe:latest
+    type: ImageChange
+status:
+  availableReplicas: 0
+  latestVersion: 0
+  observedGeneration: 0
+  replicas: 0
+  unavailableReplicas: 0
+  updatedReplicas: 0
+---
+apiVersion: v1
+kind: ImageStream
+metadata:
+  name: {{ include "fogus-openshift.fullname" . }}-fe
+  labels:
+    io.kompose.service: netappfe
+  {{- include "fogus-openshift.labels" . | nindent 4 }}
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - annotations: null
+    from:
+      kind: DockerImage
+      name: netappfe
+    generation: null
+    importPolicy: {}
+    name: latest
+    referencePolicy:
+      type: ""
+status:
+  dockerImageRepository: ""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "fogus-openshift.fullname" . }}-fe
+  labels:
+    io.kompose.service: netappfe
+  {{- include "fogus-openshift.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.fe.type }}
+  selector:
+    io.kompose.service: netappfe
+  {{- include "fogus-openshift.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.fe.ports | toYaml | nindent 2 -}}
