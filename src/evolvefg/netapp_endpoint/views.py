@@ -33,7 +33,7 @@ import datetime
 import configparser
 import os.path
 from .renderers import UserJSONRenderer
-# from  .config import *
+from pathlib import Path
 
 # # Global variables for authentication with Vertical App
 global IsAuthenticated_netapp
@@ -163,8 +163,8 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
         return MonitoringCallback.objects.all()
 
     def create(self, request, *args, **kwargs):
-        global IsAuthenticated_netapp
-        global token_netapp
+        # global IsAuthenticated_netapp
+        # global token_netapp
         headers = {
             'Content-Type': 'application/json'
         }
@@ -183,6 +183,7 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
                 "longitude": lon
             })
             # print(token_netapp)
+            IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
             if IsAuthenticated_netapp is False :
                 IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
             # Uncomment when testing with VApp
@@ -255,9 +256,9 @@ class CellViewSet(mixins.ListModelMixin,
 class CreateMonitoringSubscriptionView(APIView):
     ### Authenticate Network App ###
     def authentication_netapp():
-        global token_netapp
-        global IsAuthenticated_netapp
-        global IsAuthenticated_already
+        # global token_netapp
+        # global IsAuthenticated_netapp
+        # global IsAuthenticated_already
         vapp_host = get_vapp_server_auth()
         netapp_address = os.environ['NETAPP_ADDRESS']
         netapp_name = "Fogus NetApp"
@@ -270,18 +271,15 @@ class CreateMonitoringSubscriptionView(APIView):
         }
         response = requests.request('POST', vapp_host, headers=headers, data=payload, verify=False)
         message = json.loads(response.text)
-        print(message)
+        # print(message)
         if  "network app with this netapp address already exists." in message['Network App information']['netapp_address'] :
-            print("already")
-            IsAuthenticated_already = True
             IsAuthenticated_netapp = True
-        elif IsAuthenticated_netapp is False:
-        # message['Network App information']['netapp_address'] == netapp_address:
-            # if IsAuthenticated_already is False:
+        elif  netapp_address in message['Network App information']['netapp_address']:
             token_netapp = message['Network App information']['token']
             print("TOKEN", token_netapp)
             IsAuthenticated_netapp = True
             IsAuthenticated_already = True
+            outfile = open("netapp.json", "x")
             with open("netapp.json", "w") as outfile:
                 json.dump(message, outfile)
         else:
@@ -289,8 +287,8 @@ class CreateMonitoringSubscriptionView(APIView):
         return IsAuthenticated_netapp
 
     def get(self, request, *args, **kwargs):
-        global IsAuthenticated_netapp
-        global token_netapp
+        # global IsAuthenticated_netapp
+        # global token_netapp
         # Assignment
         answer = self.kwargs.get('string')
         answer_dict = answer.split("+")
@@ -326,10 +324,11 @@ class CreateMonitoringSubscriptionView(APIView):
             lat = cell.latitude
             lon = cell.longitude
             # if token_netapp != " " : IsAuthenticated_netapp = True
-            print("BEFORE",IsAuthenticated_netapp)
+            # print("BEFORE",IsAuthenticated_netapp)
+            IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
             if IsAuthenticated_netapp is False:
                 IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
-            print(IsAuthenticated_netapp)
+            # print(IsAuthenticated_netapp)
             vapp_host = get_vapp_server()
             payload = json.dumps({
                 "externalId": monitoring_response['external_id'],
