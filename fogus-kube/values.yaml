@@ -1,14 +1,19 @@
 dbnetapp:
   netapppostgres:
     image:
-      repository: postgres
-      tag: "10"
+      repository: 709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g
+      tag: "fogusnetapp-netapppostgres-latest"
+  ports:
+  - name: "5432"
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP
   replicas: 1
 django:
   netappdjango:
     image:
-      repository: netappdjango
-      tag: latest
+      repository: 709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g
+      tag: "fogusnetapp-netappdjango-latest"
   ports:
   - name: "8000"
     port: 8000
@@ -17,7 +22,7 @@ django:
   type: ClusterIP
 env:
   callbackAddress: 192.168.1.5:8000
-  capifHostname: capifcore
+  capifHostname: "10.11.23.56"
   capifPortHttp: "8080"
   capifPortHttps: "443"
   frontendAddress: 192.168.1.5:4200
@@ -33,8 +38,8 @@ env:
 fe:
   netappfe:
     image:
-      repository: netappfe
-      tag: latest
+      repository: 709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g
+      tag: "fogusnetapp-netappfe-latest"
   ports:
   - name: "4200"
     port: 4200

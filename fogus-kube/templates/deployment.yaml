@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "fogus-kube.fullname" . }}-dbnetapp
+  name: dbnetapp
   labels:
     io.kompose.service: dbnetapp
   {{- include "fogus-kube.labels" . | nindent 4 }}
@@ -24,78 +24,80 @@ spec:
         kompose.cmd: kompose convert -c
         kompose.version: 1.28.0 (c4137012e)
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
       - env:
         - name: CALLBACK_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: CALLBACK_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_HOSTNAME
           valueFrom:
             configMapKeyRef:
               key: CAPIF_HOSTNAME
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_PORT_HTTP
           valueFrom:
             configMapKeyRef:
               key: CAPIF_PORT_HTTP
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_PORT_HTTPS
           valueFrom:
             configMapKeyRef:
               key: CAPIF_PORT_HTTPS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: FRONTEND_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: FRONTEND_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: NEF_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: NEF_PASSWORD
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_USER
           valueFrom:
             configMapKeyRef:
               key: NEF_USER
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NETAPP_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: NETAPP_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: PATH_TO_CERTS
           valueFrom:
             configMapKeyRef:
               key: PATH_TO_CERTS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_DB
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_PASSWORD
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_USER
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: VAPP_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: VAPP_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
         image: {{ .Values.dbnetapp.netapppostgres.image.repository }}:{{ .Values.dbnetapp.netapppostgres.image.tag
@@ -107,7 +109,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "fogus-kube.fullname" . }}-django
+  name: django
   labels:
     io.kompose.service: netappdjango
   {{- include "fogus-kube.labels" . | nindent 4 }}
@@ -130,6 +132,8 @@ spec:
         kompose.cmd: kompose convert -c
         kompose.version: 1.28.0 (c4137012e)
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
       - args:
         - ./wait_db.sh
@@ -142,72 +146,72 @@ spec:
           valueFrom:
             configMapKeyRef:
               key: CALLBACK_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_HOSTNAME
           valueFrom:
             configMapKeyRef:
               key: CAPIF_HOSTNAME
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_PORT_HTTP
           valueFrom:
             configMapKeyRef:
               key: CAPIF_PORT_HTTP
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_PORT_HTTPS
           valueFrom:
             configMapKeyRef:
               key: CAPIF_PORT_HTTPS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: FRONTEND_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: FRONTEND_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: NEF_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: NEF_PASSWORD
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_USER
           valueFrom:
             configMapKeyRef:
               key: NEF_USER
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NETAPP_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: NETAPP_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: PATH_TO_CERTS
           valueFrom:
             configMapKeyRef:
               key: PATH_TO_CERTS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_DB
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_PASSWORD
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_USER
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: VAPP_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: VAPP_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
         image: {{ .Values.django.netappdjango.image.repository }}:{{ .Values.django.netappdjango.image.tag
@@ -221,7 +225,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "fogus-kube.fullname" . }}-fe
+  name: fe
   labels:
     io.kompose.service: netappfe
   {{- include "fogus-kube.labels" . | nindent 4 }}
@@ -244,78 +248,80 @@ spec:
         kompose.cmd: kompose convert -c
         kompose.version: 1.28.0 (c4137012e)
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
       - env:
         - name: CALLBACK_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: CALLBACK_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_HOSTNAME
           valueFrom:
             configMapKeyRef:
               key: CAPIF_HOSTNAME
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_PORT_HTTP
           valueFrom:
             configMapKeyRef:
               key: CAPIF_PORT_HTTP
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: CAPIF_PORT_HTTPS
           valueFrom:
             configMapKeyRef:
               key: CAPIF_PORT_HTTPS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: FRONTEND_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: FRONTEND_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: NEF_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: NEF_PASSWORD
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NEF_USER
           valueFrom:
             configMapKeyRef:
               key: NEF_USER
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: NETAPP_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: NETAPP_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: PATH_TO_CERTS
           valueFrom:
             configMapKeyRef:
               key: PATH_TO_CERTS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_DB
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_DB
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_PASSWORD
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_PASSWORD
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: POSTGRES_USER
           valueFrom:
             configMapKeyRef:
               key: POSTGRES_USER
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: VAPP_ADDRESS
           valueFrom:
             configMapKeyRef:
               key: VAPP_ADDRESS
-              name: {{ include "fogus-kube.fullname" . }}-env
+              name: env
         - name: KUBERNETES_CLUSTER_DOMAIN
           value: {{ quote .Values.kubernetesClusterDomain }}
         image: {{ .Values.fe.netappfe.image.repository }}:{{ .Values.fe.netappfe.image.tag

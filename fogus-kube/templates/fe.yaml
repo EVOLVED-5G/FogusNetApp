@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "fogus-kube.fullname" . }}-fe
+  name: fe
   labels:
     io.kompose.service: netappfe
   {{- include "fogus-kube.labels" . | nindent 4 }}
