@@ -1,3 +1,5 @@
+environment: "kubernetes-athens"
+
 dbnetapp:
   netapppostgres:
     image:
@@ -22,10 +24,10 @@ django:
   type: ClusterIP
 env:
   callbackAddress: 192.168.1.5:8000
-  capifHostname: "10.11.23.56"
-  capifPortHttp: "8080"
-  capifPortHttps: "443"
-  frontendAddress: 192.168.1.5:4200
+  capifHostname: "my-capif.evolved-5g.eu"
+  capifPortHttp: "30048"
+  capifPortHttps: "30548"
+  frontendAddress: fogus.evolved-5g.eu:80
   nefAddress: 192.168.1.5:8888
   nefPassword: pass
   nefUser: admin@my-email.com
@@ -41,7 +43,7 @@ fe:
       repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netappfe"
       tag: "latest"
   ports:
-  - name: "4200"
+  - name: "fe"
     port: 4200
     targetPort: 4200
   replicas: 1
