@@ -26,6 +26,14 @@ spec:
     spec:
       imagePullSecrets:
         - name: regcred
+      hostAliases:
+        {{- if eq .Values.env "kubernetes-athens" }}
+        - ip: "{{ .Values.ingress_ip.athens }}"
+        {{- else }}
+        - ip: "{{ .Values.ingress_ip.uma }}"
+        {{- end }}
+          hostnames:
+            - "{{ .Values.env.capifHostname }}"
       containers:
       - env:
         - name: CALLBACK_ADDRESS
@@ -134,6 +142,14 @@ spec:
     spec:
       imagePullSecrets:
         - name: regcred
+      hostAliases:
+        {{- if eq .Values.env "kubernetes-athens" }}
+        - ip: "{{ .Values.ingress_ip.athens }}"
+        {{- else }}
+        - ip: "{{ .Values.ingress_ip.uma }}"
+        {{- end }}
+          hostnames:
+            - "{{ .Values.env.capifHostname }}"
       containers:
       - args:
         - ./wait_db.sh
@@ -250,6 +266,14 @@ spec:
     spec:
       imagePullSecrets:
         - name: regcred
+      hostAliases:
+        {{- if eq .Values.env "kubernetes-athens" }}
+        - ip: "{{ .Values.ingress_ip.athens }}"
+        {{- else }}
+        - ip: "{{ .Values.ingress_ip.uma }}"
+        {{- end }}
+          hostnames:
+            - "{{ .Values.env.capifHostname }}"
       containers:
       - env:
         - name: CALLBACK_ADDRESS

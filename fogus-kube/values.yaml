@@ -1,4 +1,7 @@
 environment: "kubernetes-athens"
+ingress_ip: 
+    athens: "10.161.1.117"
+    uma: "x.x.x.x"
 
 dbnetapp:
   netapppostgres:
