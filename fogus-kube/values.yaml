@@ -1,8 +1,8 @@
 dbnetapp:
   netapppostgres:
     image:
-      repository: 709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g
-      tag: "fogusnetapp-netapppostgres-latest"
+      repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netapppostgres"
+      tag: "latest"
   ports:
   - name: "5432"
     port: 5432
@@ -12,8 +12,8 @@ dbnetapp:
 django:
   netappdjango:
     image:
-      repository: 709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g
-      tag: "fogusnetapp-netappdjango-latest"
+      repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netappdjango"
+      tag: "latest"
   ports:
   - name: "8000"
     port: 8000
@@ -38,8 +38,8 @@ env:
 fe:
   netappfe:
     image:
-      repository: 709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g
-      tag: "fogusnetapp-netappfe-latest"
+      repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netappfe"
+      tag: "latest"
   ports:
   - name: "4200"
     port: 4200
