@@ -27,7 +27,7 @@ env:
   capifHostname: "my-capif.evolved-5g.eu"
   capifPortHttp: "30048"
   capifPortHttps: "30548"
-  frontendAddress: fogus.evolved-5g.eu:80
+  frontendAddress: fogus.evolved-5g.eu
   nefAddress: 192.168.1.5:8888
   nefPassword: pass
   nefUser: admin@my-email.com

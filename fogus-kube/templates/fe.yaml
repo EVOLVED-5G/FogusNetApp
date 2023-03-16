@@ -17,7 +17,7 @@ spec:
           service:
             name: 'fe'
             port:
-              number: 80
+              number: 4200
         path: /
         pathType: Prefix
 ---
