@@ -27,7 +27,7 @@ spec:
       imagePullSecrets:
         - name: regcred
       hostAliases:
-        {{- if eq .Values.env "kubernetes-athens" }}
+        {{- if eq .Values.environment "kubernetes-athens" }}
         - ip: "{{ .Values.ingress_ip.athens }}"
         {{- else }}
         - ip: "{{ .Values.ingress_ip.uma }}"
@@ -143,7 +143,7 @@ spec:
       imagePullSecrets:
         - name: regcred
       hostAliases:
-        {{- if eq .Values.env "kubernetes-athens" }}
+        {{- if eq .Values.environment "kubernetes-athens" }}
         - ip: "{{ .Values.ingress_ip.athens }}"
         {{- else }}
         - ip: "{{ .Values.ingress_ip.uma }}"
@@ -267,7 +267,7 @@ spec:
       imagePullSecrets:
         - name: regcred
       hostAliases:
-        {{- if eq .Values.env "kubernetes-athens" }}
+        {{- if eq .Values.environment "kubernetes-athens" }}
         - ip: "{{ .Values.ingress_ip.athens }}"
         {{- else }}
         - ip: "{{ .Values.ingress_ip.uma }}"
