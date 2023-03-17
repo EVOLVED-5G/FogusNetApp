@@ -112,7 +112,8 @@ spec:
         image: {{ .Values.dbnetapp.netapppostgres.image.repository }}-{{ .Values.dbnetapp.netapppostgres.image.tag
           | default .Chart.AppVersion }}
         name: netapppostgres
-        resources: {}
+        resources:
+            {{- toYaml .Values.dbnetapp.netapppostgres.resources | nindent 12 }}
       restartPolicy: Always
 ---
 apiVersion: apps/v1
@@ -237,7 +238,8 @@ spec:
         name: netappdjango
         ports:
         - containerPort: 8000
-        resources: {}
+        resources:
+            {{- toYaml .Values.django.netappdjango.resources | nindent 12 }}
       restartPolicy: Always
 ---
 apiVersion: apps/v1
@@ -356,5 +358,6 @@ spec:
         name: netappfe
         ports:
         - containerPort: 4200
-        resources: {}
+        resources:
+            {{- toYaml .Values.fe.netappfe.resources | nindent 12 }}
       restartPolicy: Always

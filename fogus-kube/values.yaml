@@ -8,6 +8,13 @@ dbnetapp:
     image:
       repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netapppostgres"
       tag: "latest"
+    resources:
+     limits:
+       cpu: 100m
+       memory: 128Mi
+     requests:
+       cpu: 100m
+       memory: 128Mi
   ports:
   - name: "5432"
     port: 5432
@@ -19,6 +26,13 @@ django:
     image:
       repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netappdjango"
       tag: "latest"
+    resources:
+     limits:
+       cpu: 100m
+       memory: 128Mi
+     requests:
+       cpu: 100m
+       memory: 128Mi
   ports:
   - name: "8000"
     port: 8000
@@ -45,6 +59,13 @@ fe:
     image:
       repository: "709233559969.dkr.ecr.eu-central-1.amazonaws.com/evolved5g:fogusnetapp-netappfe"
       tag: "latest"
+    resources:
+     limits:
+       cpu: 100m
+       memory: 128Mi
+     requests:
+       cpu: 100m
+       memory: 128Mi
   ports:
   - name: "fe"
     port: 4200
