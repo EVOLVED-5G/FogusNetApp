@@ -23,6 +23,7 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c
         kompose.version: 1.28.0 (c4137012e)
+        checksum/config: {{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}
     spec:
       imagePullSecrets:
         - name: regcred
@@ -139,6 +140,7 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c
         kompose.version: 1.28.0 (c4137012e)
+        checksum/config: {{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}
     spec:
       imagePullSecrets:
         - name: regcred
@@ -263,6 +265,7 @@ spec:
       annotations:
         kompose.cmd: kompose convert -c
         kompose.version: 1.28.0 (c4137012e)
+        checksum/config: {{ include (print $.Template.BasePath "/env.yaml") . | sha256sum }}
     spec:
       imagePullSecrets:
         - name: regcred
