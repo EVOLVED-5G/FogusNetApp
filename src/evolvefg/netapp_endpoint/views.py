@@ -35,17 +35,6 @@ import os.path
 from .renderers import UserJSONRenderer
 from pathlib import Path
 
-# # Global variables for authentication with Vertical App
-global IsAuthenticated_netapp
-IsAuthenticated_netapp = False
-global token_netapp
-token_netapp = ""
-global IsAuthenticated_already
-IsAuthenticated_already = False
-
-config = configparser.ConfigParser()
-config.read('db_template.properties')  # it has to be changed with "db_template.properties" when filled
-
 ### Get token and environment variables ###
 def request_nef_token(nef_host, username, password):
     configuration = Configuration()
@@ -71,7 +60,7 @@ def get_vapp_server() -> str:
 
 def get_vapp_server_auth() -> str:
     vapp_address = os.environ['VAPP_ADDRESS']
-    return "https://{}/ossimserver/auth-netapp/".format(vapp_address)
+    return "https://{}/ossimserver/auth-app/".format(vapp_address)
 
 ### For location reporting ###
 def monitor_subscription(times, host, access_token, certificate_folder, capifhost, capifport, callback_server):
@@ -182,10 +171,17 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
                 "latitude": lat,
                 "longitude": lon
             })
-            # print(token_netapp)
-            IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
-            if IsAuthenticated_netapp is False :
-                IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+            token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+            if token_netapp == "":
+                token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+            with open('netapp.json', 'r') as openfile:
+                # Reading from json file
+                app_object = json.load(openfile)
+                token_from_file = app_object['App information']['token']
+                headers = {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Token'+token_from_file,
+                }
             # Uncomment when testing with VApp
             vapp_host = get_vapp_server()
             # Add parameters for TLS
@@ -256,35 +252,34 @@ class CellViewSet(mixins.ListModelMixin,
 class CreateMonitoringSubscriptionView(APIView):
     ### Authenticate Network App ###
     def authentication_netapp():
-        # global token_netapp
-        # global IsAuthenticated_netapp
-        # global IsAuthenticated_already
         vapp_host = get_vapp_server_auth()
-        netapp_address = os.environ['NETAPP_ADDRESS']
-        netapp_name = "Fogus NetApp"
+        app_address = os.environ['CALLBACK_ADDRESS']
+        app_name = "Fogus App"
         payload = json.dumps({
-            "username": netapp_name,
-            "netapp_address":netapp_address,
+            "username": app_name,
+            "app_address":app_address,
         })
         headers = {
             'Content-Type': 'application/json',
         }
         response = requests.request('POST', vapp_host, headers=headers, data=payload, verify=False)
         message = json.loads(response.text)
-        # print(message)
-        if  "network app with this netapp address already exists." in message['Network App information']['netapp_address'] :
-            IsAuthenticated_netapp = True
-        elif  netapp_address in message['Network App information']['netapp_address']:
-            token_netapp = message['Network App information']['token']
-            print("TOKEN", token_netapp)
-            IsAuthenticated_netapp = True
-            IsAuthenticated_already = True
+        file_exists = os.path.exists('netapp.json')
+        if file_exists is False:
             outfile = open("netapp.json", "x")
+        if  "app with this app address already exists." in message['App information']['app_address'] :
+             with open('netapp.json', 'r') as openfile:
+                # Reading from json file
+                app_object = json.load(openfile)
+                token_netapp = app_object['App information']['token']
+        elif  app_address in message['App information']['app_address']:
+            token_netapp = message['App information']['token']
             with open("netapp.json", "w") as outfile:
                 json.dump(message, outfile)
         else:
-            IsAuthenticated_netapp = False
-        return IsAuthenticated_netapp
+            token_netapp = ""
+        return token_netapp
+
 
     def get(self, request, *args, **kwargs):
         # global IsAuthenticated_netapp
@@ -323,12 +318,9 @@ class CreateMonitoringSubscriptionView(APIView):
             cell = Cell.objects.get(cellId=cellId)
             lat = cell.latitude
             lon = cell.longitude
-            # if token_netapp != " " : IsAuthenticated_netapp = True
-            # print("BEFORE",IsAuthenticated_netapp)
-            IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
-            if IsAuthenticated_netapp is False:
-                IsAuthenticated_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
-            # print(IsAuthenticated_netapp)
+            token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+            if token_netapp == "":
+                token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
             vapp_host = get_vapp_server()
             payload = json.dumps({
                 "externalId": monitoring_response['external_id'],
@@ -336,31 +328,21 @@ class CreateMonitoringSubscriptionView(APIView):
                 "latitude": lat,
                 "longitude": lon
             })
-            file_exists = os.path.exists('netapp.json')
-            if file_exists is True:
-                with open('netapp.json', 'r') as openfile:
-                    # Reading from json file
-                    netapp_object = json.load(openfile)
-                    token_from_file = netapp_object['Network App information']['token']
-                print("FROM FILE", token_from_file)
+            with open('netapp.json', 'r') as openfile:
+                # Reading from json file
+                app_object = json.load(openfile)
+                token_from_file = app_object['App information']['token']
                 headers = {
                     'Content-Type': 'application/json',
                     'Authorization': 'Token'+token_from_file,
                 }
-            else:
-                headers = {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Token'+token_netapp,
-                }
             # Uncomment when testing with VApp
             response = requests.request('POST', vapp_host, headers=headers, data=payload, verify= False)
             message = json.loads(response.text)
-            print(response)
             status_code = response.status_code
         else:
             status_code = status.HTTP_201_CREATED
         message = monitoring_response
-        # print(message)
         return Response(message, status=status_code)
 
 class CellsUpdateView(APIView):
