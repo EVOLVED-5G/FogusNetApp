@@ -24,10 +24,6 @@ sudo apt install -y jq
 ## Configure environmental variables 
 Edit [env_to_copy.dev](./env_to_copy.dev)
 
-
-## Deploy Network App 
-```
-
 ## Deploy the NetworkApp
 ```bash
 git clone https://github.com/EVOLVED-5G/FogusNetApp
