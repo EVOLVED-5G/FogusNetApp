@@ -1,9 +1,19 @@
-# FOGUS-Evolved-NetApp
+# FOGUS-Evolved-NetworkApp
 
 ## Install NEF Emulator
 
 Follow the instructions at:
 https://github.com/EVOLVED-5G/NEF_emulator
+
+## Install Docker
+
+Follow the instructions at:
+https://docs.docker.com/get-docker/
+
+## Install Make
+
+Follow the instructions at:
+https://www.gnu.org/software/make/
 
 ## Install jq (optional)
 
@@ -18,21 +28,19 @@ Edit [env_to_copy.dev](./env_to_copy.dev)
 ## Deploy Network App 
 ```
 
-## Deploy the NetApp
+## Deploy the NetworkApp
 ```bash
+git clone https://github.com/EVOLVED-5G/FogusNetApp
 cd FogusNetApp
 
 # Build and deploy containers
-./run.sh
-
-# Print container logs
-./logs.sh
+make run
 
 # Stop containers
-./stop.sh
+make stop
 
 # Stop and remove containers
-./cleanup_docker_containers.sh
+make clean
 ```
 
 ## Architecture
@@ -50,20 +58,6 @@ cd FogusNetApp
 http://localhost:4200/
 ```
 
-
-## Use curl
-### Populate cells from NEF Emulator
-```
-curl --location --request GET 'http://<HOST IP>:8000/netappserver/api/v1/cells/update/' | jq
-```
-### Make an one-time subscription to Monitoring Event API of NEF Emulator
-```
-curl --location --request GET http://<HOST IP>:8000/netappserver/api/v1/monitoring/subscribe/1/  | jq
-```
-### Make a multiple-times subscription to Monitoring Event API of NEF Emulator
-```
-curl --location --request GET http://<HOST IP>:8000/netappserver/api/v1/monitoring/subscribe/<times>/  | jq
-```
 
 ## Monitoring Event Callback
 ### Example of MonitoringEventReport
