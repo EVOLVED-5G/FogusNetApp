@@ -152,8 +152,6 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
         return MonitoringCallback.objects.all()
 
     def create(self, request, *args, **kwargs):
-        # global IsAuthenticated_netapp
-        # global token_netapp
         headers = {
             'Content-Type': 'application/json'
         }
@@ -251,12 +249,12 @@ class CellViewSet(mixins.ListModelMixin,
 
 class CreateMonitoringSubscriptionView(APIView):
     ### Authenticate Network App ###
-    def authentication_netapp():
+    def authentication_netapp(self):
         vapp_host = get_vapp_server_auth()
         app_address = os.environ['CALLBACK_ADDRESS']
         app_name = "Fogus App"
         payload = json.dumps({
-            "username": app_name,
+            "username":app_name,
             "app_address":app_address,
         })
         headers = {
@@ -282,9 +280,6 @@ class CreateMonitoringSubscriptionView(APIView):
 
 
     def get(self, request, *args, **kwargs):
-        # global IsAuthenticated_netapp
-        # global token_netapp
-        # Assignment
         answer = self.kwargs.get('string')
         answer_dict = answer.split("+")
         times = answer_dict[0]
@@ -308,7 +303,6 @@ class CreateMonitoringSubscriptionView(APIView):
             # monitoring_type = ConnectionMonitor.MonitoringType.INFORM_WHEN_NOT_CONNECTED 
             monitoring_response = connection_monitoring_loss_of_conn(host, token.access_token, os.environ['PATH_TO_CERTS'],
                                             os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
-        # print(monitoring_response)
         if int(times) == 1:
             cellId = monitoring_response['location_info']['cell_id']
             if cellId is None:
