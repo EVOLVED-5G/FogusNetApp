@@ -1,4 +1,4 @@
-export VERSION ?= 3.0
+export VERSION ?= 4.0
 DOCKERFILE = Dockerfile
 DOCKER_COMPOSE = docker compose
 
