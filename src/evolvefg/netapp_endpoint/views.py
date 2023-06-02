@@ -169,9 +169,9 @@ class MonitoringCallbackViewSet(mixins.ListModelMixin,
                 "latitude": lat,
                 "longitude": lon
             })
-            token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+            token_netapp = CreateMonitoringSubscriptionView.authentication_netapp(self)
             if token_netapp == "":
-                token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+                token_netapp = CreateMonitoringSubscriptionView.authentication_netapp(self)
             with open('netapp.json', 'r') as openfile:
                 # Reading from json file
                 app_object = json.load(openfile)
@@ -312,9 +312,9 @@ class CreateMonitoringSubscriptionView(APIView):
             cell = Cell.objects.get(cellId=cellId)
             lat = cell.latitude
             lon = cell.longitude
-            token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+            token_netapp = CreateMonitoringSubscriptionView.authentication_netapp(self)
             if token_netapp == "":
-                token_netapp = CreateMonitoringSubscriptionView.authentication_netapp()
+                token_netapp = CreateMonitoringSubscriptionView.authentication_netapp(self)
             vapp_host = get_vapp_server()
             payload = json.dumps({
                 "externalId": monitoring_response['external_id'],
