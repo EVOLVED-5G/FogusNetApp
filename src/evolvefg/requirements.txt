@@ -5,7 +5,7 @@ django-cors-headers==3.11.0
 django-extensions==3.1.1
 django-shell-plus==1.1.7
 djangorestframework==3.12.2
-evolved5g
+git+https://github.com/EVOLVED-5G/SDK-CLI.git@develop
 mariadb==1.0.11
 psycopg2==2.8.6
 pyJWT

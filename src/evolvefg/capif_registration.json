@@ -5,7 +5,7 @@
   "capif_https_port": "443",
   "capif_netapp_username": "test_fogus2",
   "capif_netapp_password": "test_fogus_password2",
-  "capif_callback_url": "http://192.168.1.27:8000",
+  "capif_callback_url": "http://192.168.1.20:8000",
   "description": "test_fogus_description",
   "csr_common_name": "test_fogus_common_name2",
   "csr_organizational_unit": "test_fogus_ou",

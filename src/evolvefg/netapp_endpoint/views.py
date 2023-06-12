@@ -63,10 +63,10 @@ def get_vapp_server_auth() -> str:
     return "https://{}/ossimserver/auth-app/".format(vapp_address)
 
 ### For location reporting ###
-def monitor_subscription(times, host, access_token, certificate_folder, capifhost, capifport, callback_server):
+def monitor_subscription(times, host, certificate_folder, capifhost, capifport, callback_server):
     expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     netapp_id = "myNetapp"
-    location_subscriber = LocationSubscriber(host, access_token, certificate_folder, capifhost, capifport)
+    location_subscriber = LocationSubscriber(host, certificate_folder, capifhost, capifport)
     external_id = "10001@domain.com"
 
     subscription = location_subscriber.create_subscription(
@@ -80,10 +80,10 @@ def monitor_subscription(times, host, access_token, certificate_folder, capifhos
     return monitoring_response
 
 ### For UE reachability ###
-def connection_monitoring_ue_reachability(host, access_token, certificate_folder, capifhost, capifport, callback_server):
+def connection_monitoring_ue_reachability(host, certificate_folder, capifhost, capifport, callback_server):
     expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     netapp_id = "myNetapp"
-    monitoring_subscriber = ConnectionMonitor(host, access_token, certificate_folder, capifhost, capifport)
+    monitoring_subscriber = ConnectionMonitor(host, certificate_folder, capifhost, capifport)
     external_id = "10001@domain.com"
 
     subscription = monitoring_subscriber.create_subscription(
@@ -99,10 +99,10 @@ def connection_monitoring_ue_reachability(host, access_token, certificate_folder
     return monitoring_response
 
 ### For loss of connectivity ###
-def connection_monitoring_loss_of_conn(host, access_token, certificate_folder, capifhost, capifport, callback_server):
+def connection_monitoring_loss_of_conn(host, certificate_folder, capifhost, capifport, callback_server):
     expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     netapp_id = "myNetapp"
-    monitoring_subscriber = ConnectionMonitor(host, access_token, certificate_folder, capifhost, capifport)
+    monitoring_subscriber = ConnectionMonitor(host, certificate_folder, capifhost, capifport)
     external_id = "10001@domain.com"
     
     subscription = monitoring_subscriber.create_subscription(
@@ -118,10 +118,10 @@ def connection_monitoring_loss_of_conn(host, access_token, certificate_folder, c
     return monitoring_response
 
 ### Dynamic - For UE reachability and loss of connectivity ###
-def connection_monitoring(times, MonitoringType_selected, host, access_token, certificate_folder, capifhost, capifport, callback_server):
+def connection_monitoring(times, MonitoringType_selected, host, certificate_folder, capifhost, capifport, callback_server):
     expire_time = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
     netapp_id = "myNetapp"
-    monitoring_subscriber = ConnectionMonitor(host, access_token, certificate_folder, capifhost, capifport)
+    monitoring_subscriber = ConnectionMonitor(host, certificate_folder, capifhost, capifport)
     external_id = "10001@domain.com"
     
     subscription = monitoring_subscriber.create_subscription(
@@ -288,20 +288,20 @@ class CreateMonitoringSubscriptionView(APIView):
         host = get_host_of_the_nef_emulator()
         nef_user = os.environ['NEF_USER']
         nef_pass = os.environ['NEF_PASSWORD']
-        token = request_nef_token(host, nef_user, nef_pass)
-        print("NEF TOKEN", token)
+        # token = request_nef_token(host, nef_user, nef_pass)
+        # print("NEF TOKEN", token)
         callback_host = get_host_of_the_callback_server() + "/netappserver/api/v1/monitoring/callback/"
         if MonitoringType_selected == "LOCATION_REPORTING":
-            monitoring_response = monitor_subscription(int(times), host, token.access_token, os.environ['PATH_TO_CERTS'],
+            monitoring_response = monitor_subscription(int(times), host, os.environ['PATH_TO_CERTS'],
                                             os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
         elif MonitoringType_selected == "UE_REACHABILITY":
             # monitoring_type = ConnectionMonitor.MonitoringType.INFORM_WHEN_CONNECTED 
             # monitoring_response = connection_monitoring(int(times),monitoring_type, host, token.access_token, os.environ['PATH_TO_CERTS'],os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
-            monitoring_response = connection_monitoring_ue_reachability(host, token.access_token, os.environ['PATH_TO_CERTS'],
+            monitoring_response = connection_monitoring_ue_reachability(host, os.environ['PATH_TO_CERTS'],
                                             os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
         else:
             # monitoring_type = ConnectionMonitor.MonitoringType.INFORM_WHEN_NOT_CONNECTED 
-            monitoring_response = connection_monitoring_loss_of_conn(host, token.access_token, os.environ['PATH_TO_CERTS'],
+            monitoring_response = connection_monitoring_loss_of_conn(host, os.environ['PATH_TO_CERTS'],
                                             os.environ['CAPIF_HOSTNAME'], os.environ['CAPIF_PORT_HTTPS'], callback_host)
         if int(times) == 1:
             cellId = monitoring_response['location_info']['cell_id']
