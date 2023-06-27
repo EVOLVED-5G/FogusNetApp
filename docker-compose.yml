@@ -13,13 +13,13 @@ services:
     container_name: netappdjango
     build:
       context: ./src/evolvefg
-    command: ["./wait_db.sh", "dbnetapp:5432", "--", "sh", "docker_start_up.sh"]
     ports:
       - 8000:8000
     volumes:
       - ./src/evolvefg:/code
     env_file:
       - .env
+    command: ["./wait_db.sh", "$POSTGRES_SERVER:$POSTGRES_PORT", "--", "sh", "docker_start_up.sh"]
     depends_on:
       - dbnetapp
     extra_hosts:

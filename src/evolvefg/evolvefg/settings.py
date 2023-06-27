@@ -8,6 +8,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,11 +81,11 @@ WSGI_APPLICATION = 'evolvefg.wsgi.application'
 DATABASES = {
     'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'evolvedb',
-            'USER': 'evolveclient',
-            'PASSWORD': 'evolvepass',
-            'HOST': 'dbnetapp',
-            'PORT': 5432,
+            'NAME': os.environ.get('POSTGRES_DB'),
+            'USER': os.environ.get('POSTGRES_USER'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+            'HOST': os.environ.get('POSTGRES_SERVER'),
+            'PORT': os.environ.get('POSTGRES_PORT'),
         }
 }
 
@@ -137,6 +138,7 @@ USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
+    'http://{}'.format(os.environ.get('FRONTEND_ADDRESS'))
 ]
 
 
