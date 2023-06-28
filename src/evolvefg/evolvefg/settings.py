@@ -138,7 +138,7 @@ USE_TZ = True
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:4200',
-    'http://{}'.format(os.environ.get('FRONTEND_ADDRESS'))
+    'https://fogusnetapp-frontend.com'
 ]
 
 
