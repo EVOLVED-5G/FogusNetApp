@@ -19,7 +19,7 @@ services:
       - ./src/evolvefg:/code
     env_file:
       - .env
-    command: ["./wait_db.sh", "$POSTGRES_SERVER:$POSTGRES_PORT", "--", "sh", "docker_start_up.sh"]
+    command: ["./wait_db.sh", "$POSTGRES_URI", "--", "sh", "docker_start_up.sh"]
     depends_on:
       - dbnetapp
     extra_hosts:
