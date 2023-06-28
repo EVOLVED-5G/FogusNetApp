@@ -5,9 +5,9 @@
 export const environment = {
   production: false,
   //@ts-ignore
-  backend: window["env"]["backend"] || "localhost:8000",
+  backend: window["env"]["backend"] || "fogusnetworkapp-svc-be:8000",
   //@ts-ignore
-  api: window["env"]["frontend"] || "localhost:4200"
+  api: window["env"]["frontend"] || "fogusnetworkapp-svc-fe:4200"
 };
 
 /*
