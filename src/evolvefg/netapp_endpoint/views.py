@@ -52,7 +52,7 @@ def get_host_of_the_nef_emulator() -> str:
 
 def get_host_of_the_callback_server() -> str:
     callback_address = os.environ['CALLBACK_ADDRESS']
-    return "http://{}".format(callback_address)
+    return "{}".format(callback_address)
 
 def get_vapp_server() -> str:
     vapp_address = os.environ['VAPP_ADDRESS']
@@ -251,7 +251,7 @@ class CreateMonitoringSubscriptionView(APIView):
     ### Authenticate Network App ###
     def authentication_netapp(self):
         vapp_host = get_vapp_server_auth()
-        app_address = os.environ['CALLBACK_ADDRESS']
+        app_address = os.environ['BACKEND_ADDRESS']
         app_name = "Fogus App"
         payload = json.dumps({
             "username":app_name,

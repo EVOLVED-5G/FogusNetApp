@@ -6,7 +6,7 @@ const colors = require('colors');
 require('dotenv').load();// `environment.ts` file structure
 
 const envConfigFile = `export const environment = {
-   backend: '${process.env.CALLBACK_ADDRESS}',
+   backend: '${process.env.BACKEND_ADDRESS}',
    production: '${process.env.PRODUCTION}'
 };
 `;

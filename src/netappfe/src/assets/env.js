@@ -2,7 +2,7 @@
   window["env"] = window["env"] || {};
   // Environment variables
   //@ts-ignore
-  window["env"]["backend"] = "192.168.1.151:8000";
+  window["env"]["backend"] = "http://192.168.1.19:8000";
   //@ts-ignore
-  window["env"]["frontend"] = "192.168.1.151:4200";
+  window["env"]["frontend"] = "http://192.168.1.19:4200";
 })(this);

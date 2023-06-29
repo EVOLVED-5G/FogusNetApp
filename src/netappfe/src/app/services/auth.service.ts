@@ -17,14 +17,14 @@ export class AuthService {
 
   login(data:any){
     this.userService.loggedIn = true;
-    return this.http.post('http://' + environment.backend + '/api/login/', data) ;
+    return this.http.post(environment.backend + '/api/login/', data) ;
   }
 
   register(data:any) {
-    return this.http.post('http://' + environment.backend + '/api/register/', data);
+    return this.http.post(environment.backend + '/api/register/', data);
   }
 
   logout(): Observable<any> {
-    return this.http.post('http://' + environment.backend + '/api-auth/logout/' + 'signout', { }, httpOptions);
+    return this.http.post(environment.backend + '/api-auth/logout/' + 'signout', { }, httpOptions);
   }
 }

@@ -10,6 +10,6 @@ export class DashboardService {
   constructor(private http: HttpClient) { }
 
   get_monitoring_callbacks() {
-    return this.http.get('http://' + environment.backend + '/netappserver/api/v1/monitoring/callback/');
+    return this.http.get(environment.backend + '/netappserver/api/v1/monitoring/callback/');
   }
 }
