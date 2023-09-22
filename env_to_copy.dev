@@ -1,6 +1,7 @@
 # copy this file to .env
 # cp env-file-for-local.dev .env
-
+# ENVIRONMENT can be set to development or production
+ENVIRONMENT_MODE=development
 NEF_ADDRESS=192.168.1.19:4443
 NEF_USER=admin@my-email.com
 NEF_PASSWORD=pass
