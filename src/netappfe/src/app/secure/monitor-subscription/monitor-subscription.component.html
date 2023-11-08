@@ -1,0 +1,60 @@
+<main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+<div class="col-md-8 order-md-1">
+<h2 class="mb-3" style="text-align:center;">Create a subscription</h2>
+<form [formGroup]="form" novalidate (submit)="submit()">
+    <div class="callback-container">
+        <div class="callback-row">
+            <input type="number" formControlName="callback_times" class="form-control" id="callback_times" placeholder="Number of callbacks" min="1"  required autofocus>
+            <img *ngIf="isCorrect" class="mb-4" src="../../../assets/check.svg" alt="" width="60" height="40">
+        </div>
+        <label for="callback_times" style="margin: 0 auto; text-align: center;">Number of Monitoring callbacks</label>
+    </div>
+    <div class="selectionUE">
+        <select formControlName="UE_selected" #UEselect (change)="onSelected(UEselect.value)" required>
+            <option [ngValue]="null" disabled selected>Select UE</option>
+            <option *ngFor="let UE_selected of UEs" [ngValue]="UE_selected.name">{{UE_selected.name}}</option>
+        </select>
+    </div>
+    <div class="selectionMonitoringType">
+        <select formControlName="MonitoringType_selected" #MTselect (change)="onSelected(MTselect.value)" required>
+            <option [ngValue]="null" disabled selected>Select Monitoring type</option>
+            <option value="LOCATION_REPORTING">Location Reporting</option>
+            <option value="UE_REACHABILITY"> UE Reachability </option>
+            <option value="LOSS_OF_CONNECTIVITY">Loss of connectivity</option>
+        </select>
+    </div>
+    <div class="error_message">
+        <p class="alert alert-danger" *ngIf="isTime && isUEReachability"> Number of Monitoring callbacks must be greater than 1! </p>
+        <p class="alert alert-danger" *ngIf="isLossOfConnectivity && isTime"> Number of Monitoring callbacks must be greater than 1! </p>
+    </div>
+    <div class="d-flex justify-content-center .align-content-md-stretch .align-self-center">
+        <button class="btn btn-primary btn-lg" [disabled]="form.invalid" type="submit">Subscribe</button>
+    </div>
+    <div class="one_time_message">
+        <div class="table-striped">
+            <table class="table table-striped" *ngIf="isTime && isLocationReporting && !isNullCheck">
+                <thead>
+                    <tr>
+                        <th>External Id</th>
+                        <th>Cell Id</th>
+                        <th>Monitoring Type</th>
+                        <th>IPv4</th>
+                        <th>gNBId</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td> {{ external_id }} </td>
+                        <td>{{ cell_id }}</td>
+                        <td>{{ monitoring_type }}</td>
+                        <td>{{ ipv4Addr }}</td>
+                        <td>{{ gNBId }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="one_time_null_message">
+        <p class="alert alert-danger" *ngIf="isNullCheck"> The UE is out of any cell's range!</p>
+    </div>
+</form>

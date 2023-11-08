@@ -1,0 +1,25 @@
+<main role="main" class="col-md-9 mx-auto col-lg-10 pt-3 px-4 ">
+    <h2 style="text-align: center;">Monitoring Callbacks</h2>
+    <div class="table-responsive">
+      <table class="table table-striped table-sm">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>External Id</th>
+            <th>Cell Id</th>
+            <th>Monitoring Type</th>
+            <th>IPv4</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let callback of callbacks">
+            <td>{{ callback.id }}</td>
+            <td>{{ callback.externalId }}</td>
+            <td>{{ callback.locationInfo.cellId }}</td>
+            <td>{{ callback.monitoringType }}</td>
+            <td>{{ callback.ipv4Addr }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+</main>

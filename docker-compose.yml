@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  dbnetapp:
+    image: postgres:10
+    container_name: netapppostgres
+    volumes:
+      - ./src/data/postgres-data:/var/lib/postgresql/data
+    env_file:
+      - .env
+  netappdjango:
+    image: netappdjango
+    container_name: netappdjango
+    build:
+      context: ./src/evolvefg
+    ports:
+      - 8000:8000
+    volumes:
+      - ./src/evolvefg:/code
+    env_file:
+      - .env
+    command: ["./wait_db.sh", "$POSTGRES_SERVER:$POSTGRES_PORT", "--", "sh", "docker_start_up.sh"]
+    depends_on:
+      - dbnetapp
+    extra_hosts:
+      - host.docker.internal:host-gateway
+      - capifcore:host-gateway
+  netappfe:
+    image: netappfe
+    container_name: netappfe
+    build:
+      context: ./src/netappfe
+    ports:
+      - 4200:4200
+    volumes:
+      - ./src/netappfe:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    depends_on:
+      - netappdjango

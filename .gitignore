@@ -1,0 +1,16 @@
+*.pyc
+__pycache__/
+*.py[cod]
+*$py.class
+.idea
+.git
+src/data
+src/evolvefg/nef/migrations/*
+src/evolvefg/netapp_endpoint/migrations/*
+src/netappfe/.angular/*
+src/netappfe/src/assets/env.js
+.env
+src/evolvefg/capif_onboarding/*
+!src/evolvefg/capif_onboarding/.gitkeep
+*.pem
+src/evolvefg/netapp.json

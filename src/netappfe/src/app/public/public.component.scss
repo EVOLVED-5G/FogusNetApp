@@ -1,0 +1,50 @@
+html, body {
+  height: 100vh;
+}
+
+body {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  // padding-top: 10px;
+  padding-bottom: 200px;
+  background-image: url("/assets/abstract.jpg");
+  background-size: cover;
+  width:100%;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: auto;
+}
+
+.form-signin .checkbox {
+  font-weight: 400;
+}
+
+.form-signin .form-floating:focus-within {
+  z-index: 2;
+}
+
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.footer{
+  background-color: #272b30;
+  text-align: center;
+  color: aliceblue;
+  height: 25px;
+}
